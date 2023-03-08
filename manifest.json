@@ -1,30 +1,21 @@
 {
+  "name": "NextWork Extension",
+  "description": "Logs server-side HTTP requests in Next.js",
   "manifest_version": 3,
-  "name": "Nextwork",
-  "description": "this is the version on os-labs",
-  "version": "1.0.0",
-  "minimum_chrome_version": "10.0",
-  "devtools_page": "src/nextwork-tab.html",
-  "action": {
-    "default_icon": {
-      "16": "public/logo.jpeg"
-    },
-    "default_popup": "src/popup.html"
-  },
-  "background": {
-    "service_worker": "src/service-worker.js"
-  },
-  "permissions": ["tabs", "scripting"],
-  "host_permissions": ["https://*/*", "http://*/*"],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "src/nextwork-tab.html",
-        "src/popup.html",
-        "src/panel.html"
+  "version": "1.0",
+  "devtools_page": "devtools.html",
+  "content_scripts": [{
+      "matches": [
+        "http://*/*",
+        "https://*/*"
       ],
-      "matches": ["<all_urls>"],
-      "extension_ids": []
-    }
-  ]
+      "run_at": "document_idle",
+      "js": [
+        "content_script.js"
+      ]
+  }],
+  "background": {
+      "service_worker": "service-worker.js"
+  },
+  "runtimeArgs": ["--load-extension=${workspaceFolder}"]
 }

@@ -1,21 +1,13 @@
-
-
 // write frontend logic here
 
-
 // write Chrome extension logic
-chrome.devtools.panels.create(
-       
-    );
-    
-    chrome.devtools.network.onNavigated.addListener((url) => {
-      
-    });
-    chrome.devtools.network.onRequestFinished.addListener((request) => {
-      // add Nextwork logic here?
-      // send data to frontend
-    });
+// chrome.devtools.panels.create();
 
+// chrome.devtools.network.onNavigated.addListener(url => {});
+// chrome.devtools.network.onRequestFinished.addListener(request => {
+//   // add Nextwork logic here?
+//   // send data to frontend
+// });
 
 let youClickedOn;
 
@@ -35,7 +27,7 @@ chrome.devtools.panels.create("NextWork", "logo.jpeg", "panel.html", panel => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Messages from content scripts should have sender.tab set
-  console.log('request.type', request.type);
+  console.log("request.type", request.type);
   if (sender.tab && request.click == true) {
     if (youClickedOn) {
       youClickedOn.innerHTML = `You clicked on position (${request.xPosition}, ${request.yPosition}) in the inspected page.`;
@@ -57,3 +49,21 @@ backgroundPageConnection.postMessage({
   name: "init",
   tabId: chrome.devtools.inspectedWindow.tabId,
 });
+
+// var source = new EventSource("http://localhost:3001/stream");
+// source.addEventListener(
+//   "open",
+//   function (e) {
+//     document.getElementById("content").innerHTML +=
+//       "Connections to the server established..<br/>";
+//   },
+//   false
+// );
+// source.onmessage = function (e) {
+//   document.getElementById("content").innerHTML += e.data + "<br/>";
+// };
+// document.getElementById("stopButton").onclick = function () {
+//   document.getElementById("content").innerHTML +=
+//     "Listening to server events stopped..<br/>";
+//   source.close();
+// };
