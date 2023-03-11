@@ -1,0 +1,16 @@
+.har-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.har-table td,
+.har-table th {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.har-table th {
+  background-color: #f2f2f2;
+}
