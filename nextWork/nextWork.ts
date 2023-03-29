@@ -1,16 +1,20 @@
 // import fetch from "node-fetch";
-const baseFetch = require("node-fetch");
+const baseFetch = require('node-fetch');
 // import nanoid from "nanoid";
-const nanoid = require("nanoid");
+const nanoid = require('nanoid');
 // import * as fs from "node:fs";
-const fs = require("node:fs");
+const fs = require('node:fs');
 // import * as path from "node:path";
-const path = require("node:path");
+const path = require('node:path');
 // import http from "node:http";
-const { URL } = require("node:url");
-const http = require("node:http");
-const https = require("node:https");
-const createHarLog = require("./harLog.js");
+const { URL } = require('node:url');
+const http = require('node:http');
+const https = require('node:https');
+
+const { Agent: HttpAgent } = require('node:http');
+const { Agent: HttpsAgent } = require('node:https');
+
+const createHarLog = require('./harLog.js');
 const {
   addHeaders,
   buildRequestCookies,
@@ -19,17 +23,17 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require("./helpers.js");
+} = require('./helpers.js');
 
 const generateId = nanoid;
-const headerName = "x-har-request-id";
+const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
 
 const handleRequest = (request, options) => {
   // seems like edge case for when options does not exist
   // likely that we can't create a connection because we do
   // not have host information
-  if (!options || typeof options !== "object") {
+  if (!options || typeof options !== 'object') {
     return;
   }
 
@@ -58,7 +62,7 @@ const handleRequest = (request, options) => {
       // needs to be changed to bigint - issues with json parse
       start: process.hrtime(),
     },
-    _resourceType: "fetch",
+    _resourceType: 'fetch',
     startedDateTime: new Date(Date.now()).toISOString(),
 
     cache: {
@@ -91,7 +95,7 @@ const handleRequest = (request, options) => {
   let requestBody;
 
   const concatBody = (chunk) => {
-    if (typeof chunk === "string") {
+    if (typeof chunk === 'string') {
       if (!requestBody) {
         requestBody = chunk;
       } else {
@@ -120,7 +124,7 @@ const handleRequest = (request, options) => {
       let mimeType;
 
       for (const name in headers) {
-        if (name.toLowerCase() === "content-type") {
+        if (name.toLowerCase() === 'content-type') {
           mimeType = headers[name][0];
           break;
         }
@@ -128,7 +132,7 @@ const handleRequest = (request, options) => {
 
       if (mimeType) {
         const bodyString = requestBody.toString(); // FIXME: Assumes encoding?
-        if (mimeType === "application/x-www-form-urlencoded") {
+        if (mimeType === 'application/x-www-form-urlencoded') {
           entry.request.postData = {
             mimeType,
             params: buildParams(bodyString),
@@ -143,7 +147,7 @@ const handleRequest = (request, options) => {
 
   let removeSocketListeners;
 
-  request.on("socket", (socket) => {
+  request.on('socket', (socket) => {
     entry._timestamps.socket = process.hrtime();
 
     const onLookup = () => {
@@ -158,23 +162,23 @@ const handleRequest = (request, options) => {
       entry._timestamps.secureConnect = process.hrtime();
     };
 
-    socket.once("lookup", onLookup);
-    socket.once("connect", onConnect);
-    socket.once("secureConnect", onSecureConnect);
+    socket.once('lookup', onLookup);
+    socket.once('connect', onConnect);
+    socket.once('secureConnect', onSecureConnect);
 
     removeSocketListeners = () => {
-      socket.removeListener("lookup", onLookup);
-      socket.removeListener("connect", onConnect);
-      socket.removeListener("secureConnect", onSecureConnect);
+      socket.removeListener('lookup', onLookup);
+      socket.removeListener('connect', onConnect);
+      socket.removeListener('secureConnect', onSecureConnect);
     };
   });
 
-  request.on("finish", () => {
+  request.on('finish', () => {
     entry._timestamps.sent = process.hrtime();
     removeSocketListeners();
   });
 
-  request.on("response", (response) => {
+  request.on('response', (response) => {
     entry._timestamps.firstByte = process.hrtime();
     harEntryMap.set(requestId, entry);
     // Now we know whether `lookup` or `connect` happened. It's possible they
@@ -200,21 +204,21 @@ const handleRequest = (request, options) => {
       headers: buildHeaders(response.rawHeaders),
       content: {
         size: -1,
-        mimeType: response.headers["content-type"],
+        mimeType: response.headers['content-type'],
       },
-      redirectURL: response.headers.location || "",
+      redirectURL: response.headers.location || '',
       headersSize: -1,
       bodySize: -1,
     };
 
     // Detect supported compression encodings.
     const compressed = /^(gzip|compress|deflate|br)$/.test(
-      response.headers["content-encoding"]
+      response.headers['content-encoding']
     );
 
     if (compressed) {
       entry._compressed = true;
-      response.on("data", (chunk) => {
+      response.on('data', (chunk) => {
         if (entry.response.bodySize === -1) {
           entry.response.bodySize = 0;
         }
@@ -224,11 +228,11 @@ const handleRequest = (request, options) => {
   });
 };
 
-const createAgentClass = (BaseAgent) => {
+const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
-    constructor(...args) {
+    constructor(...args: any[]) {
       super(...args);
       this.addRequest.customHarAgentEnabled = true;
     }
@@ -262,7 +266,7 @@ const instrumentAgentInstance = (agent) => {
 // parse url string
 const getInputUrl = (resource) => {
   let url;
-  if (typeof resource === "string") {
+  if (typeof resource === 'string') {
     url = resource;
   } else {
     url = resource.href; //We changed this from resource.url
@@ -273,7 +277,7 @@ const getInputUrl = (resource) => {
 // handle cases where agent does not exist in fetch options
 const getGlobalAgent = (resource) => {
   const url = getInputUrl(resource);
-  if (url.protocol === "http:") {
+  if (url.protocol === 'http:') {
     if (!globalHarHttpAgent) {
       globalHarHttpAgent = new HarHttpAgent();
     }
@@ -288,7 +292,7 @@ const getGlobalAgent = (resource) => {
 // handle agent creation and/or assignment
 const getAgent = (resource, options) => {
   if (options.agent) {
-    if (typeof options.agent === "function") {
+    if (typeof options.agent === 'function') {
       return function (...args) {
         //args are going to be resource and options obj
         const agent = options.agent.call(this, ...args);
@@ -314,16 +318,16 @@ const createNextWorkServer = () => {
   globalHarLog = createHarLog();
   const server = http.createServer();
   let timeoutId;
-  server.on("request", (request, response) => {
-    if (request.method === "GET" && request.url === "/") {
+  server.on('request', (request, response) => {
+    if (request.method === 'GET' && request.url === '/') {
       const data = fs.readFile(
-        path.join(__dirname, "../nextWorkFetchLibrary/stream.html"),
-        "utf-8",
+        path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
+        'utf-8',
         (err, data) => {
           if (err) {
             console.log(err);
           } else {
-            response.writeHead(200, { "Content-Type": "text/html" });
+            response.writeHead(200, { 'Content-Type': 'text/html' });
             response.write(data);
           }
           response.end();
@@ -331,9 +335,9 @@ const createNextWorkServer = () => {
       );
     }
     // globalHarLog = createHarLog();
-    if (request.method === "GET" && request.url === "/stream") {
-      response.writeHead(200, { "Content-Type": "text/event-stream" });
-      console.log("inside of get stream");
+    if (request.method === 'GET' && request.url === '/stream') {
+      response.writeHead(200, { 'Content-Type': 'text/event-stream' });
+      console.log('inside of get stream');
       const send = (response) => {
         if (harLogQueue.length) {
           response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
@@ -343,15 +347,15 @@ const createNextWorkServer = () => {
         timeoutId = setTimeout(() => send(response), 1000);
       };
       // handle client close connection
-      request.once("close", () => {
-        console.log("client closed connection");
+      request.once('close', () => {
+        console.log('client closed connection');
         clearTimeout(timeoutId);
       });
       send(response);
     }
   });
   server.listen(3001);
-  console.log("server is running");
+  console.log('server is running');
 };
 
 // Wrap and return custom fetch with HAR tracking
@@ -360,7 +364,7 @@ const nextWorkFetch = () => {
   return function fetch(
     resource,
     options = {},
-    defaults = { trackRequest: true, harPageRef: "", onHarEntry: false }
+    defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
   ) {
     if (defaults.trackRequest === false) {
       return originalFetch(resource, options);
@@ -430,7 +434,7 @@ const nextWorkFetch = () => {
         });
 
         // Allow grouping by pages.
-        entry.pageref = harPageRef || "page_1";
+        entry.pageref = harPageRef || 'page_1';
         parents.forEach((parent) => {
           parent.pageref = entry.pageref;
         });
@@ -504,4 +508,5 @@ const nextWorkFetch = () => {
   };
 };
 
+export {};
 fetch = nextWorkFetch();

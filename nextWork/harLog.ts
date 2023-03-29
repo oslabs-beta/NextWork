@@ -1,12 +1,12 @@
 const {
   name: packageName,
   version: packageVersion,
-} = require("../package.json");
+} = require('../package.json');
 
 const createHarLog = (entries = [], pageInfo = {}) => {
   return {
     log: {
-      version: "1.2",
+      version: '1.2',
       creator: {
         name: packageName,
         version: packageVersion,
@@ -15,8 +15,8 @@ const createHarLog = (entries = [], pageInfo = {}) => {
         Object.assign(
           {
             startedDateTime: new Date().toISOString(),
-            id: "page_1",
-            title: "Page",
+            id: 'page_1',
+            title: 'Page',
             pageTimings: {
               onContentLoad: -1,
               onLoad: -1,
@@ -29,5 +29,7 @@ const createHarLog = (entries = [], pageInfo = {}) => {
     },
   };
 };
+
+export {};
 
 module.exports = createHarLog;
