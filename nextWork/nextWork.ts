@@ -56,6 +56,7 @@ const handleRequest = (request, options) => {
     _parent: parentEntry,
     _timestamps: {
       // needs to be changed to bigint - issues with json parse
+      //process.hrtime() returns [seconds, nanoseconds] 
       start: process.hrtime(),
     },
     _resourceType: "fetch",
@@ -260,15 +261,26 @@ const instrumentAgentInstance = (agent) => {
 };
 
 // parse url string
-const getInputUrl = (resource) => {
-  let url;
+// const getInputUrl = (resource) => {
+//   let url;
+//   if (typeof resource === "string") {
+//     url = resource;
+//   } else {
+//     url = resource.href; //We changed this from resource.url
+//   }
+//   return new URL(url);
+// };
+
+function getInputUrl(resource: string | { href: string }): URL {
+  let url: string;
   if (typeof resource === "string") {
     url = resource;
   } else {
-    url = resource.href; //We changed this from resource.url
+    url = resource.href;
   }
   return new URL(url);
-};
+}
+
 
 // handle cases where agent does not exist in fetch options
 const getGlobalAgent = (resource) => {

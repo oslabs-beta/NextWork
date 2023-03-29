@@ -1,30 +1,49 @@
 // import cookie from "cookie";
 // import setCookie from "set-cookie-parser";
-const cookie = require("cookie");
-const setCookie = require("set-cookie-parser");
+const cookie = require('cookie');
+const setCookie = require('set-cookie-parser');
+
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-const addHeaders = (oldHeaders, requestIdHeader) => {
+// const addHeaders = (oldHeaders, requestIdHeader) => {
+//   if (!oldHeaders) {
+//     return requestIdHeader;
+//   } else if (
+//     //if original headers were instantiated using map or Headers
+//     typeof oldHeaders.set === "function" &&
+//     typeof oldHeaders.constructor === "functions"
+//   ) {
+//     const Headers = oldHeaders.constructor;
+//     const headers = new Headers(oldHeaders); //instantiate a new instance of Headers class
+//     for (const name in requestIdHeader) {
+//       headers.set(name, requestIdHeader[name]);
+//     }
+//     return headers;
+//   }
+//   return Object.assign({}, oldHeaders, requestIdHeader);
+// };
+
+const addHeaders = (
+  oldHeaders: Headers | { [key: string]: string } | undefined,
+  requestIdHeader: { [key: string]: string } //Record<string, string>
+): Headers => {
   if (!oldHeaders) {
-    return requestIdHeader;
-  } else if (
-    //if original headers were instantiated using map or Headers
-    typeof oldHeaders.set === "function" &&
-    typeof oldHeaders.constructor === "functions"
-  ) {
-    const Headers = oldHeaders.constructor;
-    const headers = new Headers(oldHeaders); //instantiate a new instance of Headers class
+    return new Headers(requestIdHeader);
+  } else if (oldHeaders instanceof Map || oldHeaders instanceof Headers) {
+    const headers = new Headers(oldHeaders);
     for (const name in requestIdHeader) {
       headers.set(name, requestIdHeader[name]);
     }
     return headers;
+  } else {
+    return new Headers({ ...oldHeaders, ...requestIdHeader });
   }
-  return Object.assign({}, oldHeaders, requestIdHeader);
 };
 
 const buildRequestCookies = (headers) => {
-  const cookies = [];
+  const cookies: { name: string; value: string }[] = [];
+
   for (const header in headers) {
-    if (header.toLowerCase() === "cookie") {
+    if (header.toLowerCase() === 'cookie') {
       headers[header].forEach((cookievalue) => {
         const parsedCookie = cookie.parse(cookievalue);
         for (const name in parsedCookie) {
@@ -60,11 +79,19 @@ const buildHeaders = (headers) => {
   return list;
 };
 
-const buildQueryParams = (queryParams) => {
-  return [...queryParams].map(([name, value]) => ({
-    name,
-    value,
-  }));
+// const buildQueryParams = (queryParams) => {
+//   return [...queryParams].map(([name, value]) => ({
+//     name,
+//     value,
+//   }));
+// };
+interface QueryParam {
+  name: string;
+  value: string;
+}
+
+const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
+  return [...queryParams].map(([name, value]) => ({ name, value }));
 };
 
 const buildParams = (paramString) => {
@@ -84,7 +111,7 @@ const buildParams = (paramString) => {
 
 const buildResponseCookies = (headers) => {
   const cookies = [];
-  const setCookies = headers["set-cookie"];
+  const setCookies = headers['set-cookie'];
   if (setCookies) {
     setCookies.forEach((headerValue) => {
       let parsed;
@@ -117,12 +144,19 @@ const buildResponseCookies = (headers) => {
   return cookies;
 };
 
-const getDuration = (a, b) => {
+// const getDuration = (a, b) => {
+//   const seconds = b[0] - a[0];
+//   const nanoseconds = b[1] - a[1];
+//   return seconds * 1000 + nanoseconds / 1e6;
+// };
+
+const getDuration = (a: [number, number], b: [number, number]): number => {
   const seconds = b[0] - a[0];
   const nanoseconds = b[1] - a[1];
   return seconds * 1000 + nanoseconds / 1e6;
 };
 
+export {};
 module.exports = {
   addHeaders,
   buildRequestCookies,
