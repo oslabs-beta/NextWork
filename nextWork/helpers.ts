@@ -1,15 +1,15 @@
 // import cookie from "cookie";
 // import setCookie from "set-cookie-parser";
-const cookie = require("cookie");
-const setCookie = require("set-cookie-parser");
+const cookie = require('cookie');
+const setCookie = require('set-cookie-parser');
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
 const addHeaders = (oldHeaders, requestIdHeader) => {
   if (!oldHeaders) {
     return requestIdHeader;
   } else if (
     //if original headers were instantiated using map or Headers
-    typeof oldHeaders.set === "function" &&
-    typeof oldHeaders.constructor === "functions"
+    typeof oldHeaders.set === 'function' &&
+    typeof oldHeaders.constructor === 'functions'
   ) {
     const Headers = oldHeaders.constructor;
     const headers = new Headers(oldHeaders); //instantiate a new instance of Headers class
@@ -24,7 +24,7 @@ const addHeaders = (oldHeaders, requestIdHeader) => {
 const buildRequestCookies = (headers) => {
   const cookies = [];
   for (const header in headers) {
-    if (header.toLowerCase() === "cookie") {
+    if (header.toLowerCase() === 'cookie') {
       headers[header].forEach((cookievalue) => {
         const parsedCookie = cookie.parse(cookievalue);
         for (const name in parsedCookie) {
@@ -84,7 +84,7 @@ const buildParams = (paramString) => {
 
 const buildResponseCookies = (headers) => {
   const cookies = [];
-  const setCookies = headers["set-cookie"];
+  const setCookies = headers['set-cookie'];
   if (setCookies) {
     setCookies.forEach((headerValue) => {
       let parsed;
