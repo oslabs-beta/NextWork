@@ -3,14 +3,10 @@ const {
   version: packageVersion,
 } = require('../package.json');
 
-import {
-  HarLogEntry,
-  HarLog,
-  PageInfo,
-} from './interfaces';
+import { Entry, HarLog, PageInfo } from './interfaces';
 
 const createHarLog = (
-  entries: HarLogEntry[] = [],
+  entries: Entry[] = [],
   pageInfo: PageInfo = {}
 ): { log: HarLog } => {
   return {

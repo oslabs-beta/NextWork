@@ -95,10 +95,6 @@ export interface Entry {
   };
   _compressed?: boolean;
 }
-export interface QueryParam {
-  name: string;
-  value: string;
-}
 
 export interface Creator {
   name: string;
@@ -117,22 +113,9 @@ export interface PageInfo {
   pageTimings?: PageTimings;
 }
 
-export interface HarLogEntry {
-  pageref?: string;
-  startedDateTime?: string;
-  time?: number;
-  request?: any;
-  response?: any;
-  cache?: any;
-  timings?: any;
-  serverIPAddress?: string;
-  connection?: string;
-  comment?: string;
-}
-
 export interface HarLog {
   version?: string;
   creator?: Creator;
   pages?: PageInfo[];
-  entries?: HarLogEntry[];
+  entries?: Entry[];
 }
