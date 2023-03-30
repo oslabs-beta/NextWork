@@ -3,6 +3,8 @@
 const cookie = require('cookie');
 const setCookie = require('set-cookie-parser');
 
+import { QueryParam } from './interfaces';
+
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
 // const addHeaders = (oldHeaders, requestIdHeader) => {
 //   if (!oldHeaders) {
@@ -79,16 +81,12 @@ const buildHeaders = (headers) => {
   return list;
 };
 
-// const buildQueryParams = (queryParams) => {
-//   return [...queryParams].map(([name, value]) => ({
-//     name,
-//     value,
-//   }));
-// };
-interface QueryParam {
-  name: string;
-  value: string;
-}
+const buildQueryParams = (queryParams) => {
+  return [...queryParams].map(([name, value]) => ({
+    name,
+    value,
+  }));
+};
 
 const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));
@@ -144,11 +142,11 @@ const buildResponseCookies = (headers) => {
   return cookies;
 };
 
-// const getDuration = (a, b) => {
-//   const seconds = b[0] - a[0];
-//   const nanoseconds = b[1] - a[1];
-//   return seconds * 1000 + nanoseconds / 1e6;
-// };
+const getDuration = (a, b) => {
+  const seconds = b[0] - a[0];
+  const nanoseconds = b[1] - a[1];
+  return seconds * 1000 + nanoseconds / 1e6;
+};
 
 const getDuration = (a: [number, number], b: [number, number]): number => {
   const seconds = b[0] - a[0];
@@ -159,10 +157,10 @@ const getDuration = (a: [number, number], b: [number, number]): number => {
 export {};
 module.exports = {
   addHeaders,
-  buildRequestCookies,
-  buildHeaders,
+  // buildRequestCookies,
+  // buildHeaders,
   buildQueryParams,
-  buildParams,
-  buildResponseCookies,
+  // buildParams,
+  // buildResponseCookies,
   getDuration,
 };
