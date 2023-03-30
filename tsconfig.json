@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    // "module": "CommonJS",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -18,9 +19,9 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "jsx": "preserve"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts"],
   "exclude": ["node_modules"]
 }
