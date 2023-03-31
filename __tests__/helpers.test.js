@@ -1,28 +1,3 @@
-/*
- expect an array with objects
-            headers: expect.arrayContaining([
-              {
-                name: "Content-Type",
-                value: "application/json; charset=utf-8"
-              },
-              {
-                name: "Date",
-                value: expect.any(String)
-              },
-              {
-                name: "Vary",
-                value: "Accept-Encoding"
-              },
-              {
-                name: "Content-Length",
-                value: expect.any(String)
-              },
-              {
-                name: "Connection",
-                value: "Close"
-              }
-            ])
-*/
 const { buildRequestCookies, buildParams } = require('../nextWork/helpers.ts');
 
 describe('Test buildRequestCookies', () => {

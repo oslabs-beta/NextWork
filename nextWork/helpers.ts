@@ -5,16 +5,7 @@ const setCookie = require('set-cookie-parser');
 const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
 
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-
-interface Cookie {
-  name: string;
-  value: string;
-}
-
-interface Param {
-  key: string;
-  value: string;
-}
+import { Cookie, Param } from './interfaces';
 // const addHeaders = (oldHeaders, requestIdHeader) => {
 //   if (!oldHeaders) {
 //     return requestIdHeader;

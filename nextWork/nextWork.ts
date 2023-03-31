@@ -11,9 +11,6 @@ const { URL } = require('node:url');
 const http = require('node:http');
 const https = require('node:https');
 
-const { Agent: HttpAgent } = require('node:http');
-const { Agent: HttpsAgent } = require('node:https');
-
 const createHarLog = require('./harLog.js');
 const {
   addHeaders,
@@ -28,6 +25,8 @@ const {
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
+
+import { AddRequestOptions } from './interfaces';
 
 const handleRequest = (request, options) => {
   // seems like edge case for when options does not exist
@@ -228,22 +227,27 @@ const handleRequest = (request, options) => {
   });
 };
 
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
+
 const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
     constructor(...args: any[]) {
       super(...args);
-      this.addRequest.customHarAgentEnabled = true;
+      (this.addRequest as AddRequestOptions).customHarAgentEnabled = true;
     }
 
-    addRequest(request, ...args) {
+    addRequest(request: any, ...args: any[]): void {
+      // @ts-ignore
       handleRequest(request, ...args);
       super.addRequest(request, ...args);
     }
   }
   return HarAgent;
 };
+
 // Shared agent instances.
 let globalHarHttpAgent;
 let globalHarHttpsAgent;
