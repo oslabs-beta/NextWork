@@ -28,6 +28,7 @@ const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
+    if (header.toLowerCase() === 'cookie') {
       headers[header].forEach((cookievalue) => {
         const parsedCookie = cookie.parse(cookievalue);
         for (const name in parsedCookie) {

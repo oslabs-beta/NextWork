@@ -1,3 +1,7 @@
+import { Socket } from 'node:net';
+import { ClientRequest, ClientRequestArgs } from 'http';
+import { Entry } from './interfaces';
+import { IncomingMessage } from 'node:http';
 // import fetch from "node-fetch";
 const baseFetch = require('node-fetch');
 // import nanoid from "nanoid";
@@ -28,7 +32,7 @@ const harEntryMap = new Map();
 
 import { AddRequestOptions } from './interfaces';
 
-const handleRequest = (request, options) => {
+const handleRequest = (request: any, options: any): void => {
   // seems like edge case for when options does not exist
   // likely that we can't create a connection because we do
   // not have host information
@@ -55,7 +59,7 @@ const handleRequest = (request, options) => {
 
   const url = new URL(options.url || options.href); // Depends on Node version?
 
-  const entry = {
+  const entry: Entry = {
     _parent: parentEntry,
     _timestamps: {
       // needs to be changed to bigint - issues with json parse
@@ -91,9 +95,9 @@ const handleRequest = (request, options) => {
   // capturing writes to the ClientRequest stream
   const _write = request.write;
   const _end = request.end;
-  let requestBody;
+  let requestBody: string | Buffer;
 
-  const concatBody = (chunk) => {
+  const concatBody = (chunk: string | Buffer | Uint8Array): void => {
     if (typeof chunk === 'string') {
       if (!requestBody) {
         requestBody = chunk;
@@ -104,18 +108,27 @@ const handleRequest = (request, options) => {
       if (!requestBody) {
         requestBody = chunk;
       } else {
-        requestBody = Buffer.concat([requestBody, chunk]);
+        let copiedBody = Buffer.from(requestBody);
+        requestBody = Buffer.concat([copiedBody, chunk]);
       }
     }
   };
 
-  request.write = function (...args) {
-    concatBody(...args);
-    return _write.call(this, ...args);
+  request.write = function (
+    chunk: string | Buffer | Uint8Array,
+    encoding: BufferEncoding,
+    callback?: any
+  ) {
+    concatBody(chunk);
+    return _write.call(this, chunk, encoding, callback);
   };
 
-  request.end = function (...args) {
-    concatBody(...args);
+  request.end = function (
+    chunk: string | Buffer | Uint8Array,
+    encoding: BufferEncoding,
+    callback?: any
+  ) {
+    concatBody(chunk);
 
     if (requestBody) {
       entry.request.bodySize = Buffer.byteLength(requestBody);
@@ -141,12 +154,12 @@ const handleRequest = (request, options) => {
         }
       }
     }
-    return _end.call(this, ...args);
+    return _end.call(this, chunk, encoding, callback);
   };
 
-  let removeSocketListeners;
+  let removeSocketListeners: () => void;
 
-  request.on('socket', (socket) => {
+  request.on('socket', (socket: Socket): void => {
     entry._timestamps.socket = process.hrtime();
 
     const onLookup = () => {
@@ -177,7 +190,7 @@ const handleRequest = (request, options) => {
     removeSocketListeners();
   });
 
-  request.on('response', (response) => {
+  request.on('response', (response: IncomingMessage): void => {
     entry._timestamps.firstByte = process.hrtime();
     harEntryMap.set(requestId, entry);
     // Now we know whether `lookup` or `connect` happened. It's possible they
@@ -210,10 +223,13 @@ const handleRequest = (request, options) => {
       bodySize: -1,
     };
 
+    let compressed: boolean | undefined;
     // Detect supported compression encodings.
-    const compressed = /^(gzip|compress|deflate|br)$/.test(
-      response.headers['content-encoding']
-    );
+    if (response.headers['content-encoding']) {
+      compressed = /^(gzip|compress|deflate|br)$/.test(
+        response.headers['content-encoding']
+      );
+    }
 
     if (compressed) {
       entry._compressed = true;
@@ -353,12 +369,15 @@ const createNextWorkServer = () => {
       // handle client close connection
       request.once('close', () => {
         console.log('client closed connection');
+      request.once('close', () => {
+        console.log('client closed connection');
         clearTimeout(timeoutId);
       });
       send(response);
     }
   });
   server.listen(3001);
+  console.log('server is running');
   console.log('server is running');
 };
 
@@ -368,6 +387,7 @@ const nextWorkFetch = () => {
   return function fetch(
     resource,
     options = {},
+    defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
     defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
   ) {
     if (defaults.trackRequest === false) {
