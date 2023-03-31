@@ -81,12 +81,12 @@ const buildHeaders = (headers) => {
   return list;
 };
 
-const buildQueryParams = (queryParams) => {
-  return [...queryParams].map(([name, value]) => ({
-    name,
-    value,
-  }));
-};
+// const buildQueryParams = (queryParams) => {
+//   return [...queryParams].map(([name, value]) => ({
+//     name,
+//     value,
+//   }));
+// };
 
 const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));

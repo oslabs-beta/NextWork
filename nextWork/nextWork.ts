@@ -297,7 +297,6 @@ function getInputUrl(resource: string | { href: string }): URL {
   return new URL(url);
 }
 
-
 // handle cases where agent does not exist in fetch options
 const getGlobalAgent = (resource) => {
   const url = getInputUrl(resource);
