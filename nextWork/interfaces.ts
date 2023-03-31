@@ -79,7 +79,7 @@ export interface Entry {
     postData?: PostData;
     httpVersion?: string;
   };
-  response: {
+  response?: {
     status: number | undefined;
     statusText: string | undefined;
     httpVersion: string;
