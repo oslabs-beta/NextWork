@@ -309,11 +309,15 @@ const getGlobalAgent = (resource) => {
   return globalHarHttpsAgent;
 };
 
+interface RequestOptions {
+  agent?: HttpAgent | HttpsAgent | undefined;
+}
+
 // handle agent creation and/or assignment
-const getAgent = (resource, options) => {
+const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
-      return function (...args) {
+      return function (...args: any[]) {
         //args are going to be resource and options obj
         const agent = options.agent.call(this, ...args);
         if (agent) {
@@ -369,8 +373,6 @@ const createNextWorkServer = () => {
       // handle client close connection
       request.once('close', () => {
         console.log('client closed connection');
-      request.once('close', () => {
-        console.log('client closed connection');
         clearTimeout(timeoutId);
       });
       send(response);
@@ -387,7 +389,6 @@ const nextWorkFetch = () => {
   return function fetch(
     resource,
     options = {},
-    defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
     defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
   ) {
     if (defaults.trackRequest === false) {
