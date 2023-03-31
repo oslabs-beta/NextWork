@@ -15,6 +15,11 @@ interface HeaderAndQueryString {
   comment?: string;
 }
 
+export interface QueryParam {
+  name: string;
+  value: string;
+}
+
 interface Params {
   name: string;
   value: string;
