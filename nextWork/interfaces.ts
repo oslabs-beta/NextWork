@@ -15,6 +15,11 @@ interface HeaderAndQueryString {
   comment?: string;
 }
 
+export interface QueryParam {
+  name: string;
+  value: string;
+}
+
 interface Params {
   name: string;
   value: string;
@@ -94,4 +99,28 @@ export interface Entry {
     bodySize: number;
   };
   _compressed?: boolean;
+}
+
+export interface Creator {
+  name: string;
+  version: string;
+}
+
+export interface PageTimings {
+  onContentLoad: number;
+  onLoad: number;
+}
+
+export interface PageInfo {
+  startedDateTime?: string;
+  id?: string;
+  title?: string;
+  pageTimings?: PageTimings;
+}
+
+export interface HarLog {
+  version?: string;
+  creator?: Creator;
+  pages?: PageInfo[];
+  entries?: Entry[];
 }
