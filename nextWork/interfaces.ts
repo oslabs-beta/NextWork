@@ -3,7 +3,7 @@ export interface Param {
   value: string;
 }
 
-export interface AddRequest {
+export interface AddRequestOptions {
   customHarAgentEnabled?: boolean;
 }
 export interface Cookie {

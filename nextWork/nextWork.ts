@@ -2,6 +2,7 @@ import { Socket } from 'node:net';
 import { ClientRequest, ClientRequestArgs } from 'http';
 import { Entry } from './interfaces';
 import { IncomingMessage } from 'node:http';
+import { Response } from 'node-fetch';
 // import fetch from "node-fetch";
 const baseFetch = require('node-fetch');
 // import nanoid from "nanoid";
@@ -310,16 +311,18 @@ const getGlobalAgent = (resource) => {
 };
 
 interface RequestOptions {
-  agent?: HttpAgent | HttpsAgent | undefined;
+  agent?: HttpAgent | HttpsAgent;
 }
 
 // handle agent creation and/or assignment
 const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
+      const agentFn = options.agent as (...args: any[]) => any; // Type guard
+
       return function (...args: any[]) {
         //args are going to be resource and options obj
-        const agent = options.agent.call(this, ...args);
+        const agent = agentFn.call(this, ...args);
         if (agent) {
           instrumentAgentInstance(agent);
           return agent;
@@ -336,13 +339,13 @@ const getAgent = (resource: string, options: RequestOptions) => {
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 let globalHarLog;
-const harLogQueue = [];
+const harLogQueue: Entry[] = [];
 
 const createNextWorkServer = () => {
   globalHarLog = createHarLog();
   const server = http.createServer();
-  let timeoutId;
-  server.on('request', (request, response) => {
+  let timeoutId: NodeJS.Timeout;
+  server.on('request', (request: any, response: Response) => {
     if (request.method === 'GET' && request.url === '/') {
       const data = fs.readFile(
         path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
@@ -365,7 +368,6 @@ const createNextWorkServer = () => {
       const send = (response) => {
         if (harLogQueue.length) {
           response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
-          // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
           harLogQueue.shift();
         }
         timeoutId = setTimeout(() => send(response), 1000);
@@ -379,7 +381,6 @@ const createNextWorkServer = () => {
     }
   });
   server.listen(3001);
-  console.log('server is running');
   console.log('server is running');
 };
 
@@ -516,13 +517,6 @@ const nextWorkFetch = () => {
         // }
         // globalHarLog.log.entries.push(...parents, entry);
         harLogQueue.push(...parents, entry);
-        if (onHarEntry) {
-          parents.forEach((parent) => {
-            onHarEntry(parent);
-          });
-          onHarEntry(entry);
-        }
-
         return responseCopy;
       },
       (err) => {
