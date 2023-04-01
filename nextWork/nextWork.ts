@@ -1,7 +1,9 @@
 import { Socket } from 'node:net';
 import { ClientRequest, ClientRequestArgs } from 'http';
-import { Entry } from './interfaces';
+import { Entry, Default } from './interfaces';
 import { IncomingMessage } from 'node:http';
+import { Response } from 'node-fetch';
+import * as http from 'http';
 // import fetch from "node-fetch";
 const baseFetch = require('node-fetch');
 // import nanoid from "nanoid";
@@ -15,6 +17,7 @@ const { URL } = require('node:url');
 const http = require('node:http');
 const https = require('node:https');
 const createHarLog = require('./harLog.js');
+
 const {
   addHeaders,
   buildRequestCookies,
@@ -60,7 +63,7 @@ const handleRequest = (request: any, options: any): void => {
     _parent: parentEntry,
     _timestamps: {
       // needs to be changed to bigint - issues with json parse
-      //process.hrtime() returns [seconds, nanoseconds] 
+      //process.hrtime() returns [seconds, nanoseconds]
       start: process.hrtime(),
     },
     _resourceType: 'fetch',
@@ -232,10 +235,12 @@ const handleRequest = (request: any, options: any): void => {
     if (compressed) {
       entry._compressed = true;
       response.on('data', (chunk) => {
-        if (entry.response.bodySize === -1) {
-          entry.response.bodySize = 0;
+        if (entry.response) {
+          if (entry.response.bodySize === -1) {
+            entry.response.bodySize = 0;
+          }
+          entry.response.bodySize += Buffer.byteLength(chunk);
         }
-        entry.response.bodySize += Buffer.byteLength(chunk);
       });
     }
   });
@@ -289,7 +294,7 @@ const instrumentAgentInstance = (agent) => {
 
 function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
-  if (typeof resource === "string") {
+  if (typeof resource === 'string') {
     url = resource;
   } else {
     url = resource.href;
@@ -337,60 +342,67 @@ const getAgent = (resource, options) => {
 let globalHarLog;
 const harLogQueue = [];
 
-const createNextWorkServer = () => {
+const createNextWorkServer = (): void => {
   globalHarLog = createHarLog();
   const server = http.createServer();
-  let timeoutId;
-  server.on('request', (request, response) => {
-    if (request.method === 'GET' && request.url === '/') {
-      const data = fs.readFile(
-        path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
-        'utf-8',
-        (err, data) => {
-          if (err) {
-            console.log(err);
-          } else {
-            response.writeHead(200, { 'Content-Type': 'text/html' });
-            response.write(data);
+  let timeoutId: NodeJS.Timeout;
+  server.on(
+    'request',
+    (request: http.IncomingMessage, response: http.ServerResponse) => {
+      if (request.method === 'GET' && request.url === '/') {
+        const data = fs.readFile(
+          path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
+          'utf-8',
+          (err: NodeJS.ErrnoException | null, data: string) => {
+            if (err) {
+              console.log(err);
+            } else {
+              response.writeHead(200, { 'Content-Type': 'text/html' });
+              response.write(data);
+            }
+            response.end();
           }
-          response.end();
-        }
-      );
+        );
+      }
+
+      if (request.method === 'GET' && request.url === '/stream') {
+        response.writeHead(200, { 'Content-Type': 'text/event-stream' });
+        console.log('inside of get stream');
+        const send = (response) => {
+          if (harLogQueue.length) {
+            response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
+            // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
+            harLogQueue.shift();
+          }
+          timeoutId = setTimeout(() => send(response), 1000);
+        };
+        // handle client close connection
+        request.once('close', () => {
+          console.log('client closed connection');
+          clearTimeout(timeoutId);
+        });
+        send(response);
+      }
     }
-    // globalHarLog = createHarLog();
-    if (request.method === 'GET' && request.url === '/stream') {
-      response.writeHead(200, { 'Content-Type': 'text/event-stream' });
-      console.log('inside of get stream');
-      const send = (response) => {
-        if (harLogQueue.length) {
-          response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
-          // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
-          harLogQueue.shift();
-        }
-        timeoutId = setTimeout(() => send(response), 1000);
-      };
-      // handle client close connection
-      request.once('close', () => {
-        console.log('client closed connection');
-        clearTimeout(timeoutId);
-      });
-      send(response);
-    }
-  });
+  );
   server.listen(3001);
   console.log('server is running');
 };
 
 // Wrap and return custom fetch with HAR tracking
-const nextWorkFetch = () => {
+const nextWorkFetch = (): ((
+  resource: string,
+  options: any,
+  defaults: Default
+) => (resource: RequestInfo, options?: RequestInit) => Promise<any>) => {
   createNextWorkServer();
   return function fetch(
     resource,
-    options = {},
+    options,
     defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
   ) {
     if (defaults.trackRequest === false) {
-      return originalFetch(resource, options);
+      return baseFetch(resource, options);
     }
 
     const requestId = generateId();
@@ -403,8 +415,9 @@ const nextWorkFetch = () => {
     });
 
     const { trackRequest, harPageRef, onHarEntry } = defaults;
-    return baseFetch(resource, options).then(
-      async (response) => {
+
+    return baseFetch(resource, options)
+      .then(async (response: Response) => {
         const entry = harEntryMap.get(requestId);
         harEntryMap.delete(requestId);
         if (!entry) {
@@ -436,7 +449,7 @@ const nextWorkFetch = () => {
         // on the given Fetch instance or the global scope (like `isomorphic-fetch`
         // sets). If all else fails, you can override the class used via the
         // `Response` option to `withHar`.
-        const Response =
+        const Response: Response =
           defaults.Response ||
           baseFetch.Response ||
           global.Response ||
@@ -505,30 +518,20 @@ const nextWorkFetch = () => {
         entry.timings.receive = getDuration(time.firstByte, time.received);
         entry.time = getDuration(time.start, time.received);
 
-        // populate globalEntry to send data to client
-        nextWorkFetch.global = entry;
-        // globalEntry = entry;
         responseCopy.harEntry = entry;
         // if (har && typeof har === "object") {
         //   har.log.entries.push(...parents, entry);
         // }
         // globalHarLog.log.entries.push(...parents, entry);
         harLogQueue.push(...parents, entry);
-        if (onHarEntry) {
-          parents.forEach((parent) => {
-            onHarEntry(parent);
-          });
-          onHarEntry(entry);
-        }
 
         return responseCopy;
-      },
-      (err) => {
+      })
+      .catch((err: Error) => {
         harEntryMap.delete(requestId);
         throw err;
-      }
-    );
+      });
   };
 };
 
-var fetch = nextWorkFetch();
+const fetch = nextWorkFetch();
