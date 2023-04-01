@@ -17,6 +17,11 @@ export interface Cookie {
   comment?: string;
 }
 
+export interface Header {
+  name: string;
+  value: string;
+}
+
 interface HeaderAndQueryString {
   name: string;
   value: string;
