@@ -124,3 +124,16 @@ export interface HarLog {
   pages?: PageInfo[];
   entries?: Entry[];
 }
+
+export interface Default {
+  trackRequest: boolean;
+  harPageRef: string;
+  onHarEntry: boolean;
+  Response?: Response;
+}
+
+declare global {
+  interface Window {
+    fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  }
+}
