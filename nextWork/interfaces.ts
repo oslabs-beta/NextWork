@@ -1,4 +1,12 @@
-interface Cookie {
+export interface Param {
+  key: string;
+  value: string;
+}
+
+export interface AddRequestOptions {
+  customHarAgentEnabled?: boolean;
+}
+export interface Cookie {
   name: string;
   value: string;
   path?: string;

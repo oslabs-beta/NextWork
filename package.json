@@ -2,14 +2,17 @@
   "name": "nextwork",
   "version": "0.1.0",
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose"
   },
+  "type": "module",
   "dependencies": {
+    "@types/cookie": "^0.5.1",
+    "@types/set-cookie-parser": "^2.4.2",
     "cookie": "^0.5.0",
-    "nanoid": "^2.0.3",
-    "node-fetch": "^2.6.9",
+    "nanoid": "^4.0.2",
+    "node-fetch": "^3.3.1",
     "querystring": "^0.2.1",
-    "set-cookie-parser": "^2.5.1"
+    "set-cookie-parser": "^2.6.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

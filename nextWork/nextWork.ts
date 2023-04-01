@@ -1,22 +1,18 @@
 import { Socket } from 'node:net';
 import { ClientRequest, ClientRequestArgs } from 'http';
 import { Entry, Default } from './interfaces';
-import { IncomingMessage } from 'node:http';
+import { Agent, IncomingMessage } from 'node:http';
 import { Response } from 'node-fetch';
-import * as http from 'http';
-// import fetch from "node-fetch";
-const baseFetch = require('node-fetch');
-// import nanoid from "nanoid";
-const nanoid = require('nanoid');
-// import * as fs from "node:fs";
-const fs = require('node:fs');
-// import * as path from "node:path";
-const path = require('node:path');
-// import http from "node:http";
-const { URL } = require('node:url');
-const http = require('node:http');
-const https = require('node:https');
-const createHarLog = require('./harLog.js');
+
+import http from 'node:http';
+import https from 'node:https';
+import * as baseFetch from 'node-fetch';
+
+import { nanoid } from 'nanoid';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import { URL } from 'node:url';
 
 const {
   addHeaders,
@@ -31,6 +27,8 @@ const {
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
+
+import { AddRequestOptions } from './interfaces';
 
 const handleRequest = (request: any, options: any): void => {
   // seems like edge case for when options does not exist
@@ -246,22 +244,27 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-const createAgentClass = (BaseAgent) => {
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
+
+const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
-    constructor(...args) {
+    constructor(...args: any[]) {
       super(...args);
-      this.addRequest.customHarAgentEnabled = true;
+      (this.addRequest as AddRequestOptions).customHarAgentEnabled = true;
     }
 
-    addRequest(request, ...args) {
+    addRequest(request: any, ...args: any[]): void {
+      // @ts-ignore
       handleRequest(request, ...args);
       super.addRequest(request, ...args);
     }
   }
   return HarAgent;
 };
+
 // Shared agent instances.
 let globalHarHttpAgent;
 let globalHarHttpsAgent;
@@ -317,13 +320,31 @@ const getGlobalAgent = (resource) => {
   return globalHarHttpsAgent;
 };
 
+interface RequestOptions {
+  agent?: HttpAgent | HttpsAgent;
+}
+
 // handle agent creation and/or assignment
-const getAgent = (resource, options) => {
+const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
-      return function (...args) {
-        //args are going to be resource and options obj
+      const agentFn = options.agent as (
+        this: HttpAgent | HttpsAgent,
+        ...args: any[]
+      ) => any; // Type guard
+
+      return function (...args: any[]) {
+        /*
         const agent = options.agent.call(this, ...args);
+        if (agent) {
+          instrumentAgentInstance(agent);
+          return agent;
+        }
+        return getGlobalAgent(resource);
+        */
+        //args are going to be resource and options obj
+        // @ts-ignore
+        const agent = agentFn.call(this, ...args);
         if (agent) {
           instrumentAgentInstance(agent);
           return agent;
@@ -340,10 +361,9 @@ const getAgent = (resource, options) => {
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
 let globalHarLog;
-const harLogQueue = [];
+const harLogQueue: Entry[] = [];
 
 const createNextWorkServer = (): void => {
-  globalHarLog = createHarLog();
   const server = http.createServer();
   let timeoutId: NodeJS.Timeout;
   server.on(
@@ -524,7 +544,6 @@ const nextWorkFetch = (): ((
         // }
         // globalHarLog.log.entries.push(...parents, entry);
         harLogQueue.push(...parents, entry);
-
         return responseCopy;
       })
       .catch((err: Error) => {
@@ -534,4 +553,5 @@ const nextWorkFetch = (): ((
   };
 };
 
+export {};
 const fetch = nextWorkFetch();
