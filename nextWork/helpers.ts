@@ -1,30 +1,11 @@
-// import cookie from "cookie";
-// import setCookie from "set-cookie-parser";
-const cookie = require('cookie');
-const setCookie = require('set-cookie-parser');
+import cookie from 'cookie';
+import setCookie from 'set-cookie-parser';
+
 const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
 
-const querystring = require('querystring');
-import { QueryParam } from './interfaces';
+import { QueryParam, Cookie, Param } from './interfaces';
 
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-// const addHeaders = (oldHeaders, requestIdHeader) => {
-//   if (!oldHeaders) {
-//     return requestIdHeader;
-//   } else if (
-//     //if original headers were instantiated using map or Headers
-//     typeof oldHeaders.set === "function" &&
-//     typeof oldHeaders.constructor === "functions"
-//   ) {
-//     const Headers = oldHeaders.constructor;
-//     const headers = new Headers(oldHeaders); //instantiate a new instance of Headers class
-//     for (const name in requestIdHeader) {
-//       headers.set(name, requestIdHeader[name]);
-//     }
-//     return headers;
-//   }
-//   return Object.assign({}, oldHeaders, requestIdHeader);
-// };
 
 const addHeaders = (
   oldHeaders: Headers | { [key: string]: string } | undefined,
@@ -47,14 +28,15 @@ const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
-    if (header.toLowerCase() === 'cookie') {
-      headers[header].forEach((cookievalue) => {
-        const parsedCookie = cookie.parse(cookievalue);
-        for (const name in parsedCookie) {
-          const value = parsedCookie[name];
-          cookies.push({ name, value });
-        }
-      });
+      if (header.toLowerCase() === 'cookie') {
+        headers[header].forEach((cookievalue) => {
+          const parsedCookie = cookie.parse(cookievalue);
+          for (const name in parsedCookie) {
+            const value = parsedCookie[name];
+            cookies.push({ name, value });
+          }
+        });
+      }
     }
   }
   return cookies;

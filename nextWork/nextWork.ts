@@ -1,23 +1,18 @@
 import { Socket } from 'node:net';
 import { ClientRequest, ClientRequestArgs } from 'http';
 import { Entry, Default } from './interfaces';
-import { IncomingMessage } from 'node:http';
+import { Agent, IncomingMessage } from 'node:http';
 import { Response } from 'node-fetch';
-import * as http from 'http';
-// import fetch from "node-fetch";
-const baseFetch = require('node-fetch');
-// import nanoid from "nanoid";
-const nanoid = require('nanoid');
-// import * as fs from "node:fs";
-const fs = require('node:fs');
-// import * as path from "node:path";
-const path = require('node:path');
-// import http from "node:http";
-const { URL } = require('node:url');
-const http = require('node:http');
-const https = require('node:https');
 
-const createHarLog = require('./harLog.js');
+import http from 'node:http';
+import https from 'node:https';
+import * as baseFetch from 'node-fetch';
+
+import { nanoid } from 'nanoid';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+import { URL } from 'node:url';
 
 const {
   addHeaders,
@@ -333,10 +328,22 @@ interface RequestOptions {
 const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
-      const agentFn = options.agent as (...args: any[]) => any; // Type guard
+      const agentFn = options.agent as (
+        this: HttpAgent | HttpsAgent,
+        ...args: any[]
+      ) => any; // Type guard
 
       return function (...args: any[]) {
+        /*
+        const agent = options.agent.call(this, ...args);
+        if (agent) {
+          instrumentAgentInstance(agent);
+          return agent;
+        }
+        return getGlobalAgent(resource);
+        */
         //args are going to be resource and options obj
+        // @ts-ignore
         const agent = agentFn.call(this, ...args);
         if (agent) {
           instrumentAgentInstance(agent);
@@ -357,7 +364,6 @@ let globalHarLog;
 const harLogQueue: Entry[] = [];
 
 const createNextWorkServer = (): void => {
-  globalHarLog = createHarLog();
   const server = http.createServer();
   let timeoutId: NodeJS.Timeout;
   server.on(
