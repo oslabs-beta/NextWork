@@ -3,15 +3,13 @@ import { ClientRequest, ClientRequestArgs } from 'http';
 import { Entry, Default } from './interfaces';
 import { Agent, IncomingMessage } from 'node:http';
 import { Response } from 'node-fetch';
-
 import http from 'node:http';
 import https from 'node:https';
-import * as baseFetch from 'node-fetch';
-
+// @ts-ignore
+import fetch from 'node-fetch';
 import { nanoid } from 'nanoid';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-
 import { URL } from 'node:url';
 
 const {
@@ -27,6 +25,8 @@ const {
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
+// @ts-ignore
+const baseFetch = fetch;
 
 import { AddRequestOptions } from './interfaces';
 
@@ -284,17 +284,6 @@ const instrumentAgentInstance = (agent) => {
   }
 };
 
-// parse url string
-// const getInputUrl = (resource) => {
-//   let url;
-//   if (typeof resource === "string") {
-//     url = resource;
-//   } else {
-//     url = resource.href; //We changed this from resource.url
-//   }
-//   return new URL(url);
-// };
-
 function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
@@ -388,7 +377,7 @@ const createNextWorkServer = (): void => {
       if (request.method === 'GET' && request.url === '/stream') {
         response.writeHead(200, { 'Content-Type': 'text/event-stream' });
         console.log('inside of get stream');
-        const send = (response) => {
+        const send = (response: http.ServerResponse) => {
           if (harLogQueue.length) {
             response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
             // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
@@ -553,5 +542,4 @@ const nextWorkFetch = (): ((
   };
 };
 
-export {};
 const fetch = nextWorkFetch();
