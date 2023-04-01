@@ -531,4 +531,4 @@ const nextWorkFetch = () => {
   };
 };
 
-fetch = nextWorkFetch();
+var fetch = nextWorkFetch();
