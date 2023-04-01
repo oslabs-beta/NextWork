@@ -4,15 +4,17 @@ const cookie = require('cookie');
 const setCookie = require('set-cookie-parser');
 const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
 
+const querystring = require('querystring');
+import { QueryParam } from './interfaces';
+
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-import { Cookie, Param } from './interfaces';
 // const addHeaders = (oldHeaders, requestIdHeader) => {
 //   if (!oldHeaders) {
 //     return requestIdHeader;
 //   } else if (
 //     //if original headers were instantiated using map or Headers
-//     typeof oldHeaders.set === 'function' &&
-//     typeof oldHeaders.constructor === 'functions'
+//     typeof oldHeaders.set === "function" &&
+//     typeof oldHeaders.constructor === "functions"
 //   ) {
 //     const Headers = oldHeaders.constructor;
 //     const headers = new Headers(oldHeaders); //instantiate a new instance of Headers class
@@ -23,6 +25,23 @@ import { Cookie, Param } from './interfaces';
 //   }
 //   return Object.assign({}, oldHeaders, requestIdHeader);
 // };
+
+const addHeaders = (
+  oldHeaders: Headers | { [key: string]: string } | undefined,
+  requestIdHeader: { [key: string]: string } //Record<string, string>
+): Headers => {
+  if (!oldHeaders) {
+    return new Headers(requestIdHeader);
+  } else if (oldHeaders instanceof Map || oldHeaders instanceof Headers) {
+    const headers = new Headers(oldHeaders);
+    for (const name in requestIdHeader) {
+      headers.set(name, requestIdHeader[name]);
+    }
+    return headers;
+  } else {
+    return new Headers({ ...oldHeaders, ...requestIdHeader });
+  }
+};
 
 const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
   const cookies: Cookie[] = [];
@@ -64,12 +83,9 @@ const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
 //   return list;
 // };
 
-// const buildQueryParams = (queryParams) => {
-//   return [...queryParams].map(([name, value]) => ({
-//     name,
-//     value,
-//   }));
-// };
+const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
+  return [...queryParams].map(([name, value]) => ({ name, value }));
+};
 
 const buildParams = (paramString: string): Param[] => {
   const params: Param[] = [];
@@ -127,8 +143,13 @@ const buildParams = (paramString: string): Param[] => {
 //   return seconds * 1000 + nanoseconds / 1e6;
 // };
 
-export {};
+const getDuration = (a: [number, number], b: [number, number]): number => {
+  const seconds = b[0] - a[0];
+  const nanoseconds = b[1] - a[1];
+  return seconds * 1000 + nanoseconds / 1e6;
+};
 
+export {};
 module.exports = {
   // addHeaders,
   buildRequestCookies,
