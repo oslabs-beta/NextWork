@@ -1,9 +1,11 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
+import { IncomingHttpHeaders } from "http";
 
 const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
 
-import { QueryParam, Cookie, Param } from './interfaces';
+import { QueryParam, Cookie, Param, Header } from './interfaces';
+
 
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
 
@@ -42,28 +44,28 @@ const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
   return cookies;
 };
 
-// const buildHeaders = (headers) => {
-//   const list = [];
-//   if (Array.isArray(headers)) {
-//     for (let i = 0; i < headers.length; i += 2) {
-//       list.push({
-//         name: headers[i],
-//         value: headers[i + 1],
-//       });
-//     }
-//   } else {
-//     for (const [key, values] of Object.entries(headers)) {
-//       if (Array.isArray(values)) {
-//         for (const value of values) {
-//           list.push({ key, value });
-//         }
-//       } else {
-//         list.push({ key, values });
-//       }
-//     }
-//   }
-//   return list;
-// };
+const buildHeaders = (headers: Headers): Header[] => {
+  const list: Header[] = [];
+  if (Array.isArray(headers)) {
+    for (let i = 0; i < headers.length; i += 2) {
+      list.push({
+        name: headers[i],
+        value: headers[i + 1],
+      });
+    }
+  } else {
+    for (const [key, values] of Object.entries(headers)) {
+      if (Array.isArray(values)) {
+        for (const value of values) {
+          list.push({ name: key, value });
+        }
+      } else {
+        list.push({ name: key, value: values });
+      }
+    }
+  }
+  return list;
+};
 
 const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));
@@ -84,40 +86,42 @@ const buildParams = (paramString: string): Param[] => {
   return params;
 };
 
-// const buildResponseCookies = (headers) => {
-//   const cookies = [];
-//   const setCookies = headers['set-cookie'];
-//   if (setCookies) {
-//     setCookies.forEach((headerValue) => {
-//       let parsed;
-//       try {
-//         parsed = setCookie.parse(headerValue);
-//       } catch (err) {
-//         return;
-//       }
-//       parsed.forEach((cookie) => {
-//         const { name, value, path, domain, expires, httpOnly, secure } = cookie;
-//         const harCookie = {
-//           name,
-//           value,
-//           httpOnly: httpOnly || false,
-//           secure: secure || false,
-//         };
-//         if (path) {
-//           harCookie.path = path;
-//         }
-//         if (domain) {
-//           harCookie.domain = domain;
-//         }
-//         if (expires) {
-//           harCookie.expires = expires.toISOString();
-//         }
-//         cookies.push(harCookie);
-//       });
-//     });
-//   }
-//   return cookies;
-// };
+const buildResponseCookies = (headers: IncomingHttpHeaders): Cookie[] => {
+  const cookies: Cookie[] = [];
+  const setCookies = headers["set-cookie"];
+  if (setCookies) {
+    setCookies.forEach((headerValue: string) => {
+      let parsed;
+      try {
+        parsed = setCookie.parse(headerValue);
+      } catch (err) {
+        return;
+      }
+      parsed.forEach((cookie) => {
+        const { name, value, path, domain, expires, httpOnly, secure } = cookie;
+        if (!name || !value) return;
+        const harCookie: Cookie = {
+          name,
+          value,
+          httpOnly: httpOnly || false,
+          secure: secure || false,
+        };
+        if (path) {
+          harCookie.path = path;
+        }
+        if (domain) {
+          harCookie.domain = domain;
+        }
+        if (expires) {
+          const dt = new Date(expires);
+          harCookie.expires = dt.toISOString();
+        }
+        cookies.push(harCookie);
+      });
+    });
+  }
+  return cookies;
+};
 
 // const getDuration = (a, b) => {
 //   const seconds = b[0] - a[0];
@@ -135,9 +139,9 @@ export {};
 module.exports = {
   // addHeaders,
   buildRequestCookies,
-  // buildHeaders,
+  buildHeaders,
   // buildQueryParams,
   buildParams,
-  // buildResponseCookies,
+  buildResponseCookies,
   // getDuration,
 };
