@@ -84,7 +84,7 @@ export interface Entry {
     postData?: PostData;
     httpVersion?: string;
   };
-  response: {
+  response?: {
     status: number | undefined;
     statusText: string | undefined;
     httpVersion: string;
@@ -123,4 +123,17 @@ export interface HarLog {
   creator?: Creator;
   pages?: PageInfo[];
   entries?: Entry[];
+}
+
+export interface Default {
+  trackRequest: boolean;
+  harPageRef: string;
+  onHarEntry: boolean;
+  Response?: Response;
+}
+
+declare global {
+  interface Window {
+    fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  }
 }
