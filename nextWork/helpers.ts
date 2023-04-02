@@ -1,15 +1,11 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
+import querystring from 'query-string';
+import { QueryParam, Cookie, Param, Parsed } from './interfaces';
 
-const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
-
-import { QueryParam, Cookie, Param } from './interfaces';
-
-//Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
-
-const addHeaders = (
+export const addHeaders = (
   oldHeaders: Headers | { [key: string]: string } | undefined,
-  requestIdHeader: { [key: string]: string } //Record<string, string>
+  requestIdHeader: { [key: string]: string }
 ): Headers => {
   if (!oldHeaders) {
     return new Headers(requestIdHeader);
@@ -24,7 +20,9 @@ const addHeaders = (
   }
 };
 
-const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
+export const buildRequestCookies = (
+  headers: Record<string, string[]>
+): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
@@ -65,13 +63,15 @@ const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
 //   return list;
 // };
 
-const buildQueryParams = (queryParams: Map<string, string>): QueryParam[] => {
+export const buildQueryParams = (
+  queryParams: Map<string, string>
+): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));
 };
 
-const buildParams = (paramString: string): Param[] => {
+export const buildParams = (paramString: string): Param[] => {
   const params: Param[] = [];
-  const parsed: Record<string, string> = querystring.parse(paramString);
+  const parsed = querystring.parse(paramString) as Record<string, string>;
   for (const [key, value] of Object.entries(parsed)) {
     if (Array.isArray(value)) {
       for (const item of value) {
@@ -125,19 +125,11 @@ const buildParams = (paramString: string): Param[] => {
 //   return seconds * 1000 + nanoseconds / 1e6;
 // };
 
-const getDuration = (a: [number, number], b: [number, number]): number => {
+export const getDuration = (
+  a: [number, number],
+  b: [number, number]
+): number => {
   const seconds = b[0] - a[0];
   const nanoseconds = b[1] - a[1];
   return seconds * 1000 + nanoseconds / 1e6;
-};
-
-export {};
-module.exports = {
-  // addHeaders,
-  buildRequestCookies,
-  // buildHeaders,
-  // buildQueryParams,
-  buildParams,
-  // buildResponseCookies,
-  // getDuration,
 };

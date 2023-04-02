@@ -7,6 +7,8 @@ import http from 'node:http';
 import https from 'node:https';
 // @ts-ignore
 import fetch from 'node-fetch';
+// @ts-ignore
+const baseFetch = fetch;
 import { nanoid } from 'nanoid';
 import * as fs from 'node:fs';
 import * as path from 'node:path';

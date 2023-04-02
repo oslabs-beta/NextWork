@@ -140,6 +140,10 @@ export interface Default {
   Response?: Response;
 }
 
+export interface Parsed {
+  [key: string]: string;
+}
+
 declare global {
   interface Window {
     fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
