@@ -1,4 +1,9 @@
-const { buildRequestCookies, buildParams } = require('../nextWork/helpers.ts');
+const {
+  buildRequestCookies,
+  buildParams,
+  buildHeaders,
+  buildResponseCookies,
+} = require('../nextWork/helpers.ts');
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
@@ -107,5 +112,102 @@ describe('getDuration', () => {
     const a = [1630349200, 999999999];
     const b = [1630349201, 500000000];
     expect(getDuration(a, b)).toBeCloseTo(500.000000001); // Thanks ChatGPT. Within 0.000000001ms of expected value
+  });
+});
+
+describe('buildHeaders', () => {
+  it('should build headers from an array', () => {
+    const headers = [
+      'Content-Type',
+      'application/json',
+      'Authorization',
+      'Bearer token',
+    ];
+    const expected = [
+      { name: 'Content-Type', value: 'application/json' },
+      { name: 'Authorization', value: 'Bearer token' },
+    ];
+    const result = buildHeaders(headers);
+    expect(result).toEqual(expected);
+  });
+
+  it('should build headers from an object', () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer token',
+      'X-Custom-Header': ['value1', 'value2'],
+    };
+    const expected = [
+      { name: 'Content-Type', value: 'application/json' },
+      { name: 'Authorization', value: 'Bearer token' },
+      { name: 'X-Custom-Header', value: 'value1' },
+      { name: 'X-Custom-Header', value: 'value2' },
+    ];
+    const result = buildHeaders(headers);
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('buildResponseCookies', () => {
+  test("should return an empty array if 'set-cookie' header is missing", () => {
+    const headers = {};
+    const cookies = buildResponseCookies(headers);
+    expect(cookies).toEqual([]);
+  });
+
+  test("should parse 'set-cookie' header and return an array of cookies", () => {
+    const headers = {
+      'set-cookie': [
+        'cookie1=value1; Path=/; Domain=example.com',
+        'cookie2=value2; HttpOnly; Secure',
+      ],
+    };
+    const expectedCookies = [
+      {
+        name: 'cookie1',
+        value: 'value1',
+        path: '/',
+        domain: 'example.com',
+        httpOnly: false,
+        secure: false,
+      },
+      {
+        name: 'cookie2',
+        value: 'value2',
+        httpOnly: true,
+        secure: true,
+      },
+    ];
+    const cookies = buildResponseCookies(headers);
+    expect(cookies).toEqual(expectedCookies);
+  });
+
+  test("should ignore invalid 'set-cookie' headers and continue parsing the rest", () => {
+    const headers = {
+      'set-cookie': ['cookie1=value1', 'invalid-cookie', 'cookie2=value2'],
+    };
+    const expectedCookies = [
+      { name: 'cookie1', value: 'value1', httpOnly: false, secure: false },
+      { name: 'cookie2', value: 'value2', httpOnly: false, secure: false },
+    ];
+    const cookies = buildResponseCookies(headers);
+    expect(cookies).toEqual(expectedCookies);
+  });
+
+  test("should format the 'expires' property of the cookie as an ISO string", () => {
+    const headers = {
+      'set-cookie': ['cookie1=value1; Expires=Wed, 21 Oct 2015 07:28:00 GMT'],
+    };
+    const expectedCookies = [
+      {
+        name: 'cookie1',
+        value: 'value1',
+        expires: '2015-10-21T07:28:00.000Z',
+        httpOnly: false,
+        secure: false,
+      },
+    ];
+    const cookies = buildResponseCookies(headers);
+    expect(cookies).toEqual(expectedCookies);
   });
 });

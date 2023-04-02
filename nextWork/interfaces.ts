@@ -17,6 +17,11 @@ export interface Cookie {
   comment?: string;
 }
 
+export interface Header {
+  name: string;
+  value: string;
+}
+
 interface HeaderAndQueryString {
   name: string;
   value: string;
@@ -136,7 +141,6 @@ export interface HarLog {
 export interface Default {
   trackRequest: boolean;
   harPageRef: string;
-  onHarEntry: boolean;
   Response?: Response;
 }
 

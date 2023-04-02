@@ -2,7 +2,7 @@ import { Socket } from 'node:net';
 import { ClientRequest, ClientRequestArgs } from 'http';
 import { Entry, Default } from './interfaces';
 import { Agent, IncomingMessage } from 'node:http';
-import { Response } from 'node-fetch';
+import { RequestInfo, Response } from 'node-fetch';
 import http from 'node:http';
 import https from 'node:https';
 // @ts-ignore
@@ -316,7 +316,7 @@ interface RequestOptions {
 }
 
 // handle agent creation and/or assignment
-const getAgent = (resource: string, options: RequestOptions) => {
+const getAgent = (resource: RequestInfo, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
       const agentFn = options.agent as (
@@ -325,14 +325,6 @@ const getAgent = (resource: string, options: RequestOptions) => {
       ) => any; // Type guard
 
       return function (...args: any[]) {
-        /*
-        const agent = options.agent.call(this, ...args);
-        if (agent) {
-          instrumentAgentInstance(agent);
-          return agent;
-        }
-        return getGlobalAgent(resource);
-        */
         //args are going to be resource and options obj
         // @ts-ignore
         const agent = agentFn.call(this, ...args);
@@ -349,8 +341,6 @@ const getAgent = (resource: string, options: RequestOptions) => {
   return getGlobalAgent(resource);
 };
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 let globalHarLog;
 const harLogQueue: Entry[] = [];
 
@@ -360,6 +350,8 @@ const createNextWorkServer = (): void => {
   server.on(
     'request',
     (request: http.IncomingMessage, response: http.ServerResponse) => {
+      // below is for dev purposes only - will delete when push to production
+      // as GUI will be Chrome Extension
       if (request.method === 'GET' && request.url === '/') {
         const data = fs.readFile(
           path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
@@ -378,11 +370,9 @@ const createNextWorkServer = (): void => {
 
       if (request.method === 'GET' && request.url === '/stream') {
         response.writeHead(200, { 'Content-Type': 'text/event-stream' });
-        console.log('inside of get stream');
         const send = (response: http.ServerResponse) => {
           if (harLogQueue.length) {
             response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
-            // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
             harLogQueue.shift();
           }
           timeoutId = setTimeout(() => send(response), 1000);
@@ -396,21 +386,22 @@ const createNextWorkServer = (): void => {
       }
     }
   );
-  server.listen(3001);
-  console.log('server is running');
+  server.listen(3001, () => {
+    console.log('server listening on port 3001');
+  });
 };
 
-// Wrap and return custom fetch with HAR tracking
+// Wrap and return custom fetch with HAR entry tracking
 const nextWorkFetch = (): ((
-  resource: string,
-  options: any,
-  defaults: Default
+  resource: RequestInfo,
+  options: RequestInit,
+  defaults?: Default
 ) => (resource: RequestInfo, options?: RequestInit) => Promise<any>) => {
   createNextWorkServer();
   return function fetch(
     resource,
     options,
-    defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
+    defaults = { trackRequest: true, harPageRef: '' }
   ) {
     if (defaults.trackRequest === false) {
       return baseFetch(resource, options);
@@ -422,10 +413,11 @@ const nextWorkFetch = (): ((
       //add unique request id to headers
       headers: addHeaders(options.headers, { [headerName]: requestId }),
       // get custom agent class to pass into baseFetch to handle request
+
       agent: getAgent(resource, options),
     });
 
-    const { trackRequest, harPageRef, onHarEntry } = defaults;
+    const { trackRequest, harPageRef } = defaults;
 
     return baseFetch(resource, options)
       .then(async (response: Response) => {

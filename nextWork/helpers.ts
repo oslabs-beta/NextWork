@@ -1,7 +1,8 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
 import querystring from 'query-string';
-import { QueryParam, Cookie, Param, Parsed } from './interfaces';
+import { QueryParam, Cookie, Param, Parsed, Header } from './interfaces';
+import { IncomingHttpHeaders } from 'http';
 
 export const addHeaders = (
   oldHeaders: Headers | { [key: string]: string } | undefined,
@@ -40,28 +41,28 @@ export const buildRequestCookies = (
   return cookies;
 };
 
-// const buildHeaders = (headers) => {
-//   const list = [];
-//   if (Array.isArray(headers)) {
-//     for (let i = 0; i < headers.length; i += 2) {
-//       list.push({
-//         name: headers[i],
-//         value: headers[i + 1],
-//       });
-//     }
-//   } else {
-//     for (const [key, values] of Object.entries(headers)) {
-//       if (Array.isArray(values)) {
-//         for (const value of values) {
-//           list.push({ key, value });
-//         }
-//       } else {
-//         list.push({ key, values });
-//       }
-//     }
-//   }
-//   return list;
-// };
+export const buildHeaders = (headers: Headers): Header[] => {
+  const list: Header[] = [];
+  if (Array.isArray(headers)) {
+    for (let i = 0; i < headers.length; i += 2) {
+      list.push({
+        name: headers[i],
+        value: headers[i + 1],
+      });
+    }
+  } else {
+    for (const [key, values] of Object.entries(headers)) {
+      if (Array.isArray(values)) {
+        for (const value of values) {
+          list.push({ name: key, value });
+        }
+      } else {
+        list.push({ name: key, value: values });
+      }
+    }
+  }
+  return list;
+};
 
 export const buildQueryParams = (
   queryParams: Map<string, string>
@@ -84,46 +85,44 @@ export const buildParams = (paramString: string): Param[] => {
   return params;
 };
 
-// const buildResponseCookies = (headers) => {
-//   const cookies = [];
-//   const setCookies = headers['set-cookie'];
-//   if (setCookies) {
-//     setCookies.forEach((headerValue) => {
-//       let parsed;
-//       try {
-//         parsed = setCookie.parse(headerValue);
-//       } catch (err) {
-//         return;
-//       }
-//       parsed.forEach((cookie) => {
-//         const { name, value, path, domain, expires, httpOnly, secure } = cookie;
-//         const harCookie = {
-//           name,
-//           value,
-//           httpOnly: httpOnly || false,
-//           secure: secure || false,
-//         };
-//         if (path) {
-//           harCookie.path = path;
-//         }
-//         if (domain) {
-//           harCookie.domain = domain;
-//         }
-//         if (expires) {
-//           harCookie.expires = expires.toISOString();
-//         }
-//         cookies.push(harCookie);
-//       });
-//     });
-//   }
-//   return cookies;
-// };
-
-// const getDuration = (a, b) => {
-//   const seconds = b[0] - a[0];
-//   const nanoseconds = b[1] - a[1];
-//   return seconds * 1000 + nanoseconds / 1e6;
-// };
+export const buildResponseCookies = (
+  headers: IncomingHttpHeaders
+): Cookie[] => {
+  const cookies: Cookie[] = [];
+  const setCookies = headers['set-cookie'];
+  if (setCookies) {
+    setCookies.forEach((headerValue: string) => {
+      let parsed;
+      try {
+        parsed = setCookie.parse(headerValue);
+      } catch (err) {
+        return;
+      }
+      parsed.forEach((cookie) => {
+        const { name, value, path, domain, expires, httpOnly, secure } = cookie;
+        if (!name || !value) return;
+        const harCookie: Cookie = {
+          name,
+          value,
+          httpOnly: httpOnly || false,
+          secure: secure || false,
+        };
+        if (path) {
+          harCookie.path = path;
+        }
+        if (domain) {
+          harCookie.domain = domain;
+        }
+        if (expires) {
+          const dt = new Date(expires);
+          harCookie.expires = dt.toISOString();
+        }
+        cookies.push(harCookie);
+      });
+    });
+  }
+  return cookies;
+};
 
 export const getDuration = (
   a: [number, number],
