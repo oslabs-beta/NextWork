@@ -1,11 +1,10 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
-import { IncomingHttpHeaders } from "http";
+import { IncomingHttpHeaders } from 'http';
 
 const querystring = require('querystring'); //The querystring API is considered Legacy. new code should use the URLSearchParams API instead. This is imported for testing purposes
 
 import { QueryParam, Cookie, Param, Header } from './interfaces';
-
 
 //Headers API: https://developer.mozilla.org/en-US/docs/Web/API/Headers
 
@@ -88,7 +87,7 @@ const buildParams = (paramString: string): Param[] => {
 
 const buildResponseCookies = (headers: IncomingHttpHeaders): Cookie[] => {
   const cookies: Cookie[] = [];
-  const setCookies = headers["set-cookie"];
+  const setCookies = headers['set-cookie'];
   if (setCookies) {
     setCookies.forEach((headerValue: string) => {
       let parsed;
