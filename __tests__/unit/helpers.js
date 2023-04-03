@@ -1,9 +1,9 @@
-const {
+import {
   buildRequestCookies,
   buildParams,
   buildHeaders,
   buildResponseCookies,
-} = require('../nextWork/helpers.ts');
+} from '../../nextWork/helpers.js';
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
@@ -50,7 +50,7 @@ const {
   addHeaders,
   buildQueryParams,
   getDuration,
-} = require('../nextWork/helpers');
+} = require('../../nextWork/helpers.js');
 
 describe('addHeaders', () => {
   it('returns a headers object with requestIdHeader if oldHeaders is null or undefined', () => {

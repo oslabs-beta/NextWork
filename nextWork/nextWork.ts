@@ -255,7 +255,9 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
+export const createAgentClass = (
+  BaseAgent: typeof HttpAgent | typeof HttpsAgent
+) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
@@ -413,7 +415,7 @@ const createNextWorkServer = (): void => {
 };
 
 // Wrap and return custom fetch with HAR entry tracking
-const nextWorkFetch = (): ((
+export const nextWorkFetch = (): ((
   resource: string,
   options: RequestOptions,
   defaults?: Default
