@@ -2,7 +2,7 @@ import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
 import querystring from 'query-string';
 import { QueryParam, Cookie, Param, Parsed, Header } from './interfaces';
-import { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'node:http';
 
 export const addHeaders = (
   oldHeaders: Headers | { [key: string]: string } | undefined,

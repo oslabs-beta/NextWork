@@ -1,3 +1,11 @@
+import {
+  ClientRequest,
+  ClientRequestArgs,
+  Agent as HttpAgent,
+} from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
+import { Response } from 'node-fetch';
+
 export interface Param {
   key: string;
   value: string;
@@ -146,6 +154,62 @@ export interface Default {
 
 export interface Parsed {
   [key: string]: string;
+}
+
+export interface RequestOptions {
+  agent?: HttpAgent | HttpsAgent;
+  method?: string;
+  headers?: HeadersInit;
+  body?: BodyInit;
+  referrer?: string;
+  referrerPolicy?: ReferrerPolicy;
+  mode?: RequestMode;
+  credentials?: RequestCredentials;
+  cache?: RequestCache;
+  redirect?: RequestRedirect;
+  integrity?: string;
+  keepalive?: boolean;
+  signal?: AbortSignal | null;
+}
+
+export interface CustomResponseInit extends ResponseInit {
+  ok?: boolean;
+}
+
+export interface CustomResponse extends Response {
+  harEntry?: Entry;
+}
+
+export interface BaseFetch {
+  (
+    resource: string,
+    options: RequestOptions,
+    defaults?: Default | undefined
+  ): Promise<any>;
+  Response?: Response;
+}
+
+interface AddRequest {
+  (
+    request: ClientRequest,
+    options: ClientRequestArgs,
+    port?: number,
+    localAddress?: string
+  ): (
+    request: ClientRequest,
+    options: ClientRequestArgs,
+    port?: number,
+    localAddress?: string
+  ) => void;
+  customHarAgentEnabled?: boolean;
+}
+
+export interface InstrumentedHttpsAgent extends HttpsAgent {
+  addRequest?: AddRequest;
+}
+
+export interface InstrumentedHttpAgent extends HttpAgent {
+  addRequest?: AddRequest;
 }
 
 declare global {
