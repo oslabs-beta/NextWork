@@ -1,11 +1,18 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
 import querystring from 'query-string';
-import { QueryParam, Cookie, Param, Parsed, Header } from './interfaces';
+import {
+  QueryParam,
+  Cookie,
+  Params,
+  Parsed,
+  HeaderAndQueryString,
+} from './interfaces';
 import { IncomingHttpHeaders } from 'node:http';
+import { URLSearchParams } from 'node:url';
 
 export const addHeaders = (
-  oldHeaders: Headers | { [key: string]: string } | undefined,
+  oldHeaders: HeadersInit | undefined,
   requestIdHeader: { [key: string]: string }
 ): Headers => {
   if (!oldHeaders) {
@@ -17,32 +24,29 @@ export const addHeaders = (
     }
     return headers;
   } else {
-    return new Headers({ ...oldHeaders, ...requestIdHeader });
+    const headers = new Headers({ ...oldHeaders, ...requestIdHeader });
+    return headers;
   }
 };
-
+// Record<string, string[]>
 export const buildRequestCookies = (
-  headers: Record<string, string[]>
+  headers: Record<string, string>
 ): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
-      if (header.toLowerCase() === 'cookie') {
-        headers[header].forEach((cookievalue) => {
-          const parsedCookie = cookie.parse(cookievalue);
-          for (const name in parsedCookie) {
-            const value = parsedCookie[name];
-            cookies.push({ name, value });
-          }
-        });
+      const parsed = cookie.parse(headers[header]);
+      for (const name in parsed) {
+        const value = parsed[name];
+        cookies.push({ name, value });
       }
     }
   }
   return cookies;
 };
 
-export const buildHeaders = (headers: Headers): Header[] => {
-  const list: Header[] = [];
+export const buildHeaders = (headers: string[]): HeaderAndQueryString[] => {
+  const list: HeaderAndQueryString[] = [];
   if (Array.isArray(headers)) {
     for (let i = 0; i < headers.length; i += 2) {
       list.push({
@@ -56,7 +60,7 @@ export const buildHeaders = (headers: Headers): Header[] => {
         for (const value of values) {
           list.push({ name: key, value });
         }
-      } else {
+      } else if (typeof values === 'string') {
         list.push({ name: key, value: values });
       }
     }
@@ -65,21 +69,22 @@ export const buildHeaders = (headers: Headers): Header[] => {
 };
 
 export const buildQueryParams = (
-  queryParams: Map<string, string>
+  queryParams: URLSearchParams
 ): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));
 };
 
-export const buildParams = (paramString: string): Param[] => {
-  const params: Param[] = [];
+export const buildParams = (paramString: string): Params[] => {
+  const params: Params[] = [];
   const parsed = querystring.parse(paramString) as Record<string, string>;
+
   for (const [key, value] of Object.entries(parsed)) {
     if (Array.isArray(value)) {
       for (const item of value) {
         params.push({ key, value: item });
       }
     } else {
-      params.push({ key, value });
+      params.push({ key, value: value });
     }
   }
   return params;

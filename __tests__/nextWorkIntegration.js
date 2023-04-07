@@ -1,4 +1,4 @@
-import { nextWorkFetch } from '../../nextWork/nextWork.js';
+import { nextWorkFetch } from '../nextWork/nextWork.ts';
 
 describe('integration tests tests', () => {
   it('populates HAR entry with GET Request', async () => {
@@ -55,7 +55,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,
@@ -105,6 +105,10 @@ describe('integration tests tests', () => {
           },
           {
             name: 'ETag',
+            value: expect.any(String),
+          },
+          {
+            name: 'set-cookie',
             value: expect.any(String),
           },
         ]),
@@ -171,7 +175,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,
@@ -273,7 +277,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,

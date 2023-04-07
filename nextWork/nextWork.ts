@@ -17,7 +17,6 @@ import http, {
 } from 'node:http';
 import { RequestInfo, ResponseInit, Response } from 'node-fetch';
 import { Agent as HttpsAgent } from 'node:https';
-// @ts-ignore
 import fetch from 'node-fetch';
 // @ts-ignore
 const baseFetch: BaseFetch = fetch;
@@ -26,7 +25,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { URL } from 'node:url';
 
-const {
+import {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -34,13 +33,11 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('./helpers.js');
+} from './helpers';
 
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
-// @ts-ignore
-const baseFetch = fetch;
 
 import { AddRequestOptions } from './interfaces';
 
@@ -50,7 +47,9 @@ const handleRequest = (request: any, options: any): void => {
   }
 
   const headers = options.headers || {};
-  const requestId = headers[headerName] ? headers[headerName][0] : null;
+
+  const requestId = headers[headerName] ? headers[headerName] : null;
+  console.log(headers);
 
   if (!requestId) {
     return;
@@ -88,7 +87,7 @@ const handleRequest = (request: any, options: any): void => {
       connect: -1,
       send: 0,
       wait: 0,
-      recieve: 0,
+      receive: 0,
       ssl: -1,
     },
     request: {
@@ -97,7 +96,7 @@ const handleRequest = (request: any, options: any): void => {
       cookies: buildRequestCookies(headers),
       headers: buildHeaders(headers),
       queryString: buildQueryParams(url.searchParams),
-      headerSize: -1,
+      headersSize: -1,
       bodySize: -1,
     },
   };
@@ -275,7 +274,6 @@ export const createAgentClass = (
   return HarAgent;
 };
 
-// Need to change this to instance of HarAgent type
 let globalHarHttpAgent: InstrumentedHttpAgent;
 let globalHarHttpsAgent: InstrumentedHttpsAgent;
 
@@ -313,7 +311,7 @@ const instrumentAgentInstance = (
   }
 };
 
-function getInputUrl(resource: string | { href: string }): URL {
+export function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
     url = resource;
@@ -420,7 +418,7 @@ export const nextWorkFetch = (): ((
   options: RequestOptions,
   defaults?: Default
 ) => Promise<any>) => {
-  createNextWorkServer();
+  // createNextWorkServer();
   return function fetch(
     resource,
     options,
@@ -431,7 +429,7 @@ export const nextWorkFetch = (): ((
     }
 
     const requestId = generateId();
-
+    console.log('requestId in nextWork fetch', requestId);
     options = Object.assign({}, options, {
       //add unique request id to headers
       headers: addHeaders(options.headers, { [headerName]: requestId }),
@@ -445,6 +443,7 @@ export const nextWorkFetch = (): ((
     return baseFetch(resource, options)
       .then(async (response) => {
         const entry = harEntryMap.get(requestId);
+
         harEntryMap.delete(requestId);
         if (!entry) {
           return response;
@@ -527,7 +526,6 @@ export const nextWorkFetch = (): ((
         entry.time = getDuration(time.start, time.received);
 
         responseCopy.harEntry = entry;
-
         harLogQueue.push(...parents, entry);
         return responseCopy;
       })
@@ -538,4 +536,4 @@ export const nextWorkFetch = (): ((
   };
 };
 
-const fetch = nextWorkFetch();
+// const fetch = nextWorkFetch();

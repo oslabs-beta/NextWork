@@ -6,14 +6,10 @@ import {
 import { Agent as HttpsAgent } from 'node:https';
 import { Response } from 'node-fetch';
 
-export interface Param {
-  key: string;
-  value: string;
-}
-
 export interface AddRequestOptions {
   customHarAgentEnabled?: boolean;
 }
+
 export interface Cookie {
   name: string;
   value: string;
@@ -25,15 +21,9 @@ export interface Cookie {
   comment?: string;
 }
 
-export interface Header {
+export interface HeaderAndQueryString {
   name: string;
   value: string;
-}
-
-interface HeaderAndQueryString {
-  name: string;
-  value: string;
-  comment?: string;
 }
 
 export interface QueryParam {
@@ -41,12 +31,9 @@ export interface QueryParam {
   value: string;
 }
 
-interface Params {
-  name: string;
+export interface Params {
+  [key: string]: string;
   value: string;
-  fileName?: string;
-  contentType?: string;
-  comment?: string;
 }
 
 interface PostData {
@@ -91,7 +78,7 @@ export interface Entry {
     connect: number;
     send: number;
     wait: number;
-    recieve: number;
+    receive: number;
     ssl: number;
   };
   request: {
@@ -100,7 +87,7 @@ export interface Entry {
     cookies: Cookie[];
     headers: HeaderAndQueryString[];
     queryString: HeaderAndQueryString[];
-    headerSize: number;
+    headersSize: number;
     bodySize: number;
     postData?: PostData;
     httpVersion?: string;
