@@ -1,6 +1,6 @@
-const { Agent: HttpAgent } = require('node:http');
-const { Agent: HttpsAgent } = require('node:https');
-const { createAgentClass } = require('../nextWork/nextWork.ts');
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:http';
+import { createAgentClass } from '../nextWork/nextWork.ts';
 
 describe('Test createAgentClass', () => {
   it('should set customHarAgentEnabled to true on addRequest', () => {
@@ -13,7 +13,7 @@ describe('Test createAgentClass', () => {
     expect(harHttpsAgent.addRequest.customHarAgentEnabled).toBe(true);
   });
 });
-const { getInputUrl } = require('../nextWork/nextWork');
+import { getInputUrl } from '../nextWork/nextWork.ts';
 
 describe('getInputUrl', () => {
   it('should return a URL object for a string input', () => {
