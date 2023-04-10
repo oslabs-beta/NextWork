@@ -81,10 +81,10 @@ export const buildParams = (paramString: string): Params[] => {
   for (const [key, value] of Object.entries(parsed)) {
     if (Array.isArray(value)) {
       for (const item of value) {
-        params.push({ key, value: item });
+        params.push({ name: key, value: item });
       }
     } else {
-      params.push({ key, value: value });
+      params.push({ name: key, value: value });
     }
   }
   return params;

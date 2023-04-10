@@ -22,8 +22,6 @@
     "typescript": "^5.0.2"
   },
   "jest": {
-    "verbose": true,
-    "testEnvironment": "node",
     "preset": "ts-jest/presets/js-with-ts",
     "transformIgnorePatterns": [
       "node_modules/(?!nanoid|query-string|decode-uri-component|split-on-first|filter-obj|node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)"
