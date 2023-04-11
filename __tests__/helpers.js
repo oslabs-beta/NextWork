@@ -33,9 +33,9 @@ describe('Test buildParams', () => {
   it('should extract params from a query string', () => {
     const urlQuery = 'name=value&key=value1&key=value2';
     const expectedParams = [
-      { key: 'key', value: 'value1' },
-      { key: 'key', value: 'value2' },
-      { key: 'name', value: 'value' },
+      { name: 'key', value: 'value1' },
+      { name: 'key', value: 'value2' },
+      { name: 'name', value: 'value' },
     ];
 
     expect(buildParams(urlQuery)).toEqual(expectedParams);

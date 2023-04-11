@@ -49,7 +49,6 @@ const handleRequest = (request: any, options: any): void => {
   const headers = options.headers || {};
 
   const requestId = headers[headerName] ? headers[headerName] : null;
-  console.log(headers);
 
   if (!requestId) {
     return;
@@ -146,7 +145,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name][0];
+          mimeType = headers[name];
           break;
         }
       }
@@ -429,7 +428,7 @@ export const nextWorkFetch = (): ((
     }
 
     const requestId = generateId();
-    console.log('requestId in nextWork fetch', requestId);
+
     options = Object.assign({}, options, {
       //add unique request id to headers
       headers: addHeaders(options.headers, { [headerName]: requestId }),
