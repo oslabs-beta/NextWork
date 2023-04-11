@@ -1,4 +1,16 @@
-interface Cookie {
+import {
+  ClientRequest,
+  ClientRequestArgs,
+  Agent as HttpAgent,
+} from 'node:http';
+import { Agent as HttpsAgent } from 'node:https';
+import { Response } from 'node-fetch';
+
+export interface AddRequestOptions {
+  customHarAgentEnabled?: boolean;
+}
+
+export interface Cookie {
   name: string;
   value: string;
   path?: string;
@@ -9,10 +21,9 @@ interface Cookie {
   comment?: string;
 }
 
-interface HeaderAndQueryString {
+export interface HeaderAndQueryString {
   name: string;
   value: string;
-  comment?: string;
 }
 
 export interface QueryParam {
@@ -20,12 +31,9 @@ export interface QueryParam {
   value: string;
 }
 
-interface Params {
-  name: string;
+export interface Params {
+  [key: string]: string;
   value: string;
-  fileName?: string;
-  contentType?: string;
-  comment?: string;
 }
 
 interface PostData {
@@ -70,7 +78,7 @@ export interface Entry {
     connect: number;
     send: number;
     wait: number;
-    recieve: number;
+    receive: number;
     ssl: number;
   };
   request: {
@@ -79,7 +87,7 @@ export interface Entry {
     cookies: Cookie[];
     headers: HeaderAndQueryString[];
     queryString: HeaderAndQueryString[];
-    headerSize: number;
+    headersSize: number;
     bodySize: number;
     postData?: PostData;
     httpVersion?: string;
@@ -128,8 +136,67 @@ export interface HarLog {
 export interface Default {
   trackRequest: boolean;
   harPageRef: string;
-  onHarEntry: boolean;
   Response?: Response;
+}
+
+export interface Parsed {
+  [key: string]: string;
+}
+
+export interface RequestOptions {
+  agent?: HttpAgent | HttpsAgent;
+  method?: string;
+  headers?: HeadersInit;
+  body?: BodyInit;
+  referrer?: string;
+  referrerPolicy?: ReferrerPolicy;
+  mode?: RequestMode;
+  credentials?: RequestCredentials;
+  cache?: RequestCache;
+  redirect?: RequestRedirect;
+  integrity?: string;
+  keepalive?: boolean;
+  signal?: AbortSignal | null;
+}
+
+export interface CustomResponseInit extends ResponseInit {
+  ok?: boolean;
+}
+
+export interface CustomResponse extends Response {
+  harEntry?: Entry;
+}
+
+export interface BaseFetch {
+  (
+    resource: string,
+    options: RequestOptions,
+    defaults?: Default | undefined
+  ): Promise<any>;
+  Response?: Response;
+}
+
+interface AddRequest {
+  (
+    request: ClientRequest,
+    options: ClientRequestArgs,
+    port?: number,
+    localAddress?: string
+  ): (
+    request: ClientRequest,
+    options: ClientRequestArgs,
+    port?: number,
+    localAddress?: string
+  ) => void;
+  customHarAgentEnabled?: boolean;
+}
+
+export interface InstrumentedHttpsAgent extends HttpsAgent {
+  addRequest?: AddRequest;
+}
+
+export interface InstrumentedHttpAgent extends HttpAgent {
+  addRequest?: AddRequest;
 }
 
 declare global {

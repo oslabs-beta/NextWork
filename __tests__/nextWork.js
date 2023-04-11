@@ -1,4 +1,19 @@
-const { getInputUrl } = require('../nextWork/nextWork');
+import { Agent as HttpAgent } from 'node:http';
+import { Agent as HttpsAgent } from 'node:http';
+import { createAgentClass } from '../nextWork/nextWork.ts';
+
+describe('Test createAgentClass', () => {
+  it('should set customHarAgentEnabled to true on addRequest', () => {
+    const HarHttpAgent = createAgentClass(HttpAgent);
+    const harHttpAgent = new HarHttpAgent();
+    expect(harHttpAgent.addRequest.customHarAgentEnabled).toBe(true);
+
+    const HarHttpsAgent = createAgentClass(HttpsAgent);
+    const harHttpsAgent = new HarHttpsAgent();
+    expect(harHttpsAgent.addRequest.customHarAgentEnabled).toBe(true);
+  });
+});
+import { getInputUrl } from '../nextWork/nextWork.ts';
 
 describe('getInputUrl', () => {
   it('should return a URL object for a string input', () => {

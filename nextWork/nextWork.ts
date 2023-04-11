@@ -1,24 +1,31 @@
 import { Socket } from 'node:net';
-import { ClientRequest, ClientRequestArgs } from 'http';
-import { Entry, Default } from './interfaces';
-import { IncomingMessage } from 'node:http';
-import { Response } from 'node-fetch';
-import * as http from 'http';
-// import fetch from "node-fetch";
-const baseFetch = require('node-fetch');
-// import nanoid from "nanoid";
-const nanoid = require('nanoid');
-// import * as fs from "node:fs";
-const fs = require('node:fs');
-// import * as path from "node:path";
-const path = require('node:path');
-// import http from "node:http";
-const { URL } = require('node:url');
-const http = require('node:http');
-const https = require('node:https');
-const createHarLog = require('./harLog.js');
+import {
+  Entry,
+  Default,
+  RequestOptions,
+  BaseFetch,
+  CustomResponseInit,
+  CustomResponse,
+  InstrumentedHttpsAgent,
+  InstrumentedHttpAgent,
+} from './interfaces';
+import http, {
+  IncomingMessage,
+  Agent as HttpAgent,
+  ClientRequest,
+  ClientRequestArgs,
+} from 'node:http';
+import { RequestInfo, ResponseInit, Response } from 'node-fetch';
+import { Agent as HttpsAgent } from 'node:https';
+import fetch from 'node-fetch';
+// @ts-ignore
+const baseFetch: BaseFetch = fetch;
+import { nanoid } from 'nanoid';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { URL } from 'node:url';
 
-const {
+import {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -26,26 +33,26 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('./helpers.js');
+} from './helpers';
 
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
 
+import { AddRequestOptions } from './interfaces';
+
 const handleRequest = (request: any, options: any): void => {
-  // seems like edge case for when options does not exist
-  // likely that we can't create a connection because we do
-  // not have host information
   if (!options || typeof options !== 'object') {
     return;
   }
 
   const headers = options.headers || {};
-  const requestId = headers[headerName] ? headers[headerName][0] : null;
-  // not sure if we need this piece of code
-  //   if (!requestId) {
-  //     return;
-  //   }
+
+  const requestId = headers[headerName] ? headers[headerName] : null;
+
+  if (!requestId) {
+    return;
+  }
 
   // Redirects! Fetch follows them (in `follow`) mode and uses the same request
   // headers. So we'll see multiple requests with the same ID. We should remove
@@ -79,7 +86,7 @@ const handleRequest = (request: any, options: any): void => {
       connect: -1,
       send: 0,
       wait: 0,
-      recieve: 0,
+      receive: 0,
       ssl: -1,
     },
     request: {
@@ -88,7 +95,7 @@ const handleRequest = (request: any, options: any): void => {
       cookies: buildRequestCookies(headers),
       headers: buildHeaders(headers),
       queryString: buildQueryParams(url.searchParams),
-      headerSize: -1,
+      headersSize: -1,
       bodySize: -1,
     },
   };
@@ -138,7 +145,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name][0];
+          mimeType = headers[name];
           break;
         }
       }
@@ -246,53 +253,64 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-const createAgentClass = (BaseAgent) => {
+export const createAgentClass = (
+  BaseAgent: typeof HttpAgent | typeof HttpsAgent
+) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
-    constructor(...args) {
+    constructor(...args: any[]) {
       super(...args);
-      this.addRequest.customHarAgentEnabled = true;
+      (this.addRequest as AddRequestOptions).customHarAgentEnabled = true;
     }
 
-    addRequest(request, ...args) {
+    addRequest(request: any, ...args: any[]): void {
+      // @ts-ignore
       handleRequest(request, ...args);
       super.addRequest(request, ...args);
     }
   }
   return HarAgent;
 };
-// Shared agent instances.
-let globalHarHttpAgent;
-let globalHarHttpsAgent;
 
-const HarHttpAgent = createAgentClass(http.Agent);
-const HarHttpsAgent = createAgentClass(https.Agent);
+let globalHarHttpAgent: InstrumentedHttpAgent;
+let globalHarHttpsAgent: InstrumentedHttpsAgent;
 
-// add custom wrapper to addRequest for request interception and HAR entry population
-const instrumentAgentInstance = (agent) => {
+const HarHttpAgent = createAgentClass(HttpAgent);
+const HarHttpsAgent = createAgentClass(HttpsAgent);
+
+const instrumentAgentInstance = (
+  agent: InstrumentedHttpAgent | InstrumentedHttpsAgent
+) => {
   const { addRequest: originalAddRequest } = agent;
-  if (!originalAddRequest.customHarAgentEnabled) {
-    agent.addRequest = function addRequest(request, ...args) {
-      handleRequest(request, ...args);
-      return originalAddRequest.call(this, request, ...args); //here 'this' refers to agent object
-    };
-    agent.addRequest.customHarAgentEnabled = true;
+  if (originalAddRequest) {
+    if (!originalAddRequest.customHarAgentEnabled) {
+      agent.addRequest = function addRequest(
+        request: ClientRequest,
+        options: ClientRequestArgs,
+        port?: number,
+        localAddress?: string
+      ): (
+        request: ClientRequest,
+        options: ClientRequestArgs,
+        port?: number,
+        localAddress?: string
+      ) => void {
+        handleRequest(request, options);
+        return originalAddRequest.call(
+          this,
+          request,
+          options,
+          port,
+          localAddress
+        ); //here 'this' refers to agent object
+      };
+      agent.addRequest.customHarAgentEnabled = true;
+    }
   }
 };
 
-// parse url string
-// const getInputUrl = (resource) => {
-//   let url;
-//   if (typeof resource === "string") {
-//     url = resource;
-//   } else {
-//     url = resource.href; //We changed this from resource.url
-//   }
-//   return new URL(url);
-// };
-
-function getInputUrl(resource: string | { href: string }): URL {
+export function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
     url = resource;
@@ -303,27 +321,33 @@ function getInputUrl(resource: string | { href: string }): URL {
 }
 
 // handle cases where agent does not exist in fetch options
-const getGlobalAgent = (resource) => {
+const getGlobalAgent = (resource: string) => {
   const url = getInputUrl(resource);
   if (url.protocol === 'http:') {
     if (!globalHarHttpAgent) {
-      globalHarHttpAgent = new HarHttpAgent();
+      globalHarHttpAgent = new HarHttpAgent() as InstrumentedHttpAgent;
     }
     return globalHarHttpAgent;
   }
   if (!globalHarHttpsAgent) {
-    globalHarHttpsAgent = new HarHttpsAgent();
+    globalHarHttpsAgent = new HarHttpsAgent() as InstrumentedHttpsAgent;
   }
   return globalHarHttpsAgent;
 };
 
 // handle agent creation and/or assignment
-const getAgent = (resource, options) => {
+const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
-      return function (...args) {
+      const agentFn = options.agent as (
+        this: HttpAgent | HttpsAgent,
+        ...args: any[]
+      ) => any; // Type guard
+
+      return function (...args: any[]) {
         //args are going to be resource and options obj
-        const agent = options.agent.call(this, ...args);
+        // @ts-ignore
+        const agent = agentFn.call(this, ...args);
         if (agent) {
           instrumentAgentInstance(agent);
           return agent;
@@ -337,18 +361,17 @@ const getAgent = (resource, options) => {
   return getGlobalAgent(resource);
 };
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 let globalHarLog;
-const harLogQueue = [];
+const harLogQueue: Entry[] = [];
 
 const createNextWorkServer = (): void => {
-  globalHarLog = createHarLog();
   const server = http.createServer();
   let timeoutId: NodeJS.Timeout;
   server.on(
     'request',
     (request: http.IncomingMessage, response: http.ServerResponse) => {
+      // below is for dev purposes only - will delete when push to production
+      // as GUI will be Chrome Extension
       if (request.method === 'GET' && request.url === '/') {
         const data = fs.readFile(
           path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
@@ -367,11 +390,9 @@ const createNextWorkServer = (): void => {
 
       if (request.method === 'GET' && request.url === '/stream') {
         response.writeHead(200, { 'Content-Type': 'text/event-stream' });
-        console.log('inside of get stream');
-        const send = (response) => {
+        const send = (response: http.ServerResponse) => {
           if (harLogQueue.length) {
             response.write(`data: ${JSON.stringify(harLogQueue[0])}\n\n`);
-            // response.write(`data: ${JSON.stringify(globalHarLog)}\n\n`);
             harLogQueue.shift();
           }
           timeoutId = setTimeout(() => send(response), 1000);
@@ -385,21 +406,22 @@ const createNextWorkServer = (): void => {
       }
     }
   );
-  server.listen(3001);
-  console.log('server is running');
+  server.listen(3001, () => {
+    console.log('server listening on port 3001');
+  });
 };
 
-// Wrap and return custom fetch with HAR tracking
-const nextWorkFetch = (): ((
+// Wrap and return custom fetch with HAR entry tracking
+export const nextWorkFetch = (): ((
   resource: string,
-  options: any,
-  defaults: Default
-) => (resource: RequestInfo, options?: RequestInit) => Promise<any>) => {
-  createNextWorkServer();
+  options: RequestOptions,
+  defaults?: Default
+) => Promise<any>) => {
+  // createNextWorkServer();
   return function fetch(
     resource,
     options,
-    defaults = { trackRequest: true, harPageRef: '', onHarEntry: false }
+    defaults = { trackRequest: true, harPageRef: '' }
   ) {
     if (defaults.trackRequest === false) {
       return baseFetch(resource, options);
@@ -411,14 +433,16 @@ const nextWorkFetch = (): ((
       //add unique request id to headers
       headers: addHeaders(options.headers, { [headerName]: requestId }),
       // get custom agent class to pass into baseFetch to handle request
+
       agent: getAgent(resource, options),
     });
 
-    const { trackRequest, harPageRef, onHarEntry } = defaults;
+    const { trackRequest, harPageRef } = defaults;
 
     return baseFetch(resource, options)
-      .then(async (response: Response) => {
+      .then(async (response) => {
         const entry = harEntryMap.get(requestId);
+
         harEntryMap.delete(requestId);
         if (!entry) {
           return response;
@@ -442,32 +466,14 @@ const nextWorkFetch = (): ((
           child = parent;
         } while (child);
 
-        // In some versions of `node-fetch`, the returned `response` is actually
-        // an instance of `Body`, not `Response`, and the `Body` class does not
-        // set a `headers` property when constructed. So instead of using
-        // `response.constructor`, try to get `Response` from other places, like
-        // on the given Fetch instance or the global scope (like `isomorphic-fetch`
-        // sets). If all else fails, you can override the class used via the
-        // `Response` option to `withHar`.
-        const Response: Response =
-          defaults.Response ||
-          baseFetch.Response ||
-          global.Response ||
-          response.constructor;
-
-        // `clone()` is broken in `node-fetch` and results in a stalled Promise
-        // for responses above a certain size threshold. So construct a similar
-        // clone ourselves...
         const responseCopy = new Response(text, {
           status: response.status,
           statusText: response.statusText,
           headers: response.headers,
-          // These are not spec-compliant `Response` options, but `node-fetch`
-          // has them.
           ok: response.ok,
           size: response.size,
           url: response.url,
-        });
+        } as CustomResponseInit) as CustomResponse;
 
         // Allow grouping by pages.
         entry.pageref = harPageRef || 'page_1';
@@ -519,12 +525,7 @@ const nextWorkFetch = (): ((
         entry.time = getDuration(time.start, time.received);
 
         responseCopy.harEntry = entry;
-        // if (har && typeof har === "object") {
-        //   har.log.entries.push(...parents, entry);
-        // }
-        // globalHarLog.log.entries.push(...parents, entry);
         harLogQueue.push(...parents, entry);
-
         return responseCopy;
       })
       .catch((err: Error) => {
@@ -534,4 +535,4 @@ const nextWorkFetch = (): ((
   };
 };
 
-const fetch = nextWorkFetch();
+// const fetch = nextWorkFetch();
