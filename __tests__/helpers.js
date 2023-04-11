@@ -6,7 +6,7 @@ import {
   buildParams,
   buildResponseCookies,
   getDuration,
-} from '../nextWork/helpers.ts';
+} from '../src/helpers.ts';
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
