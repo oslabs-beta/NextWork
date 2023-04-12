@@ -10,6 +10,7 @@ import {
 } from './interfaces';
 import { IncomingHttpHeaders } from 'node:http';
 import { URLSearchParams } from 'node:url';
+import { Headers } from 'node-fetch';
 
 export const addHeaders = (
   oldHeaders: HeadersInit | undefined,
