@@ -1,4 +1,4 @@
-import { nextWorkFetch } from '../nextWork/nextWork.ts';
+import { nextWorkFetch } from '../src/nextWork.ts';
 
 describe('integration tests tests', () => {
   it('populates HAR entry with GET Request', async () => {
