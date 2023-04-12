@@ -13,15 +13,16 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
+    "noEmit": false,
     "incremental": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
     "jsx": "preserve",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "declaration": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "./src"],
+  "include": ["./src"],
   "exclude": ["node_modules"]
 }
