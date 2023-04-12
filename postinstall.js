@@ -1,8 +1,10 @@
 import * as fs from 'node:fs';
+import { readFile, readFileSync } from 'node:fs';
 import * as path from 'node:path';
 
 const packageJsonPath = path.resolve(process.cwd(), 'package.json');
-import packageJson from packageJsonPath;
+const json = readFileSync(packageJsonPath);
+const packageJson = JSON.parse(json);
 
 packageJson.scripts = packageJson.scripts || {};
 packageJson.scripts['nextWorkDev'] =
