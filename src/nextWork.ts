@@ -17,6 +17,7 @@ import http, {
 } from 'node:http';
 import { RequestInfo, ResponseInit, Response } from 'node-fetch';
 import { Agent as HttpsAgent } from 'node:https';
+// @ts-ignore
 import fetch from 'node-fetch';
 // @ts-ignore
 const baseFetch: BaseFetch = fetch;

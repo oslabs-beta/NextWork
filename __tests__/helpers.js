@@ -7,6 +7,7 @@ import {
   buildResponseCookies,
   getDuration,
 } from '../src/helpers.ts';
+import { Headers } from 'node-fetch';
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
