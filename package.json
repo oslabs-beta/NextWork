@@ -1,17 +1,17 @@
 {
-  "name": "nextwork",
-  "version": "0.1.0",
+  "name": "next-work",
+  "version": "1.0.3",
   "main": "./lib/nextWork.js",
   "module": "./lib/nextWork.js",
   "files": [
-    "./lib",
+    "lib/",
+    "README.md",
     "postinstall.js"
   ],
   "scripts": {
     "test": "jest",
-    "postinstall": "node postinstall.js",
     "tsc": "tsc -p tsconfig.json",
-    "prepublishOnly": "npm run tsc"
+    "postinstall": "node postinstall.js"
   },
   "type": "module",
   "dependencies": {

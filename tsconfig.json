@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "ES2020",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "declaration": true,
     "target": "ES2015",
     "strictNullChecks": true,
     "noImplicitAny": true,
@@ -20,7 +19,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": false,
-    "outDir": "./lib"
+    "jsx": "preserve",
+    "outDir": "./lib",
+    "declaration": true
   },
   "include": ["./src"],
   "exclude": ["node_modules"]
