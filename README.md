@@ -1,4 +1,3 @@
-# What is NextWork?
 NextWork is a developer tool for watching HTTP network requests and responses in Server-Side Rendered components. Inspecting HTTP communications can help debug SSR pages and optimize code. 
 
 ## Usage
