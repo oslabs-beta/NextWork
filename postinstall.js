@@ -1,6 +1,6 @@
-import * as fs from 'node:fs';
-import { readFile, readFileSync } from 'node:fs';
-import * as path from 'node:path';
+const fs = require('node:fs');
+const { readFile, readFileSync } = require('node:fs');
+const path = require('node:path');
 
 const packageJsonPath = path.resolve(process.cwd(), '../../package.json');
 const json = readFileSync(packageJsonPath);

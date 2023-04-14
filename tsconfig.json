@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ES2020",
+    "module": "CommonJS",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]

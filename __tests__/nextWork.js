@@ -1,6 +1,6 @@
-import { Agent as HttpAgent } from 'node:http';
-import { Agent as HttpsAgent } from 'node:http';
-import { createAgentClass, getInputUrl } from '../src/nextWork.ts';
+const { Agent: HttpAgent } = require('node:http');
+const { Agent: HttpsAgent } = require('node:http');
+const { createAgentClass, getInputUrl } = require('../src/nextWork.ts');
 
 describe('Test createAgentClass', () => {
   it('should set customHarAgentEnabled to true on addRequest', () => {
