@@ -4,7 +4,6 @@ import {
   Agent as HttpAgent,
 } from 'node:http';
 import { Agent as HttpsAgent } from 'node:https';
-import { Response } from 'node-fetch';
 
 export interface AddRequestOptions {
   customHarAgentEnabled?: boolean;
