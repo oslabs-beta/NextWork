@@ -20,8 +20,10 @@ const { Agent: HttpAgent } = require('node:http');
 const { Response } = require('node-fetch');
 const { Agent: HttpsAgent } = require('node:https');
 const transpiledFetch = require('node-fetch');
+console.log(`this is transpiled fetch`, transpiledFetch);
 const baseFetch: BaseFetch = transpiledFetch.default;
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
+console.log('this is nanoid', nanoid);
 const fs = require('node:fs');
 const path = require('node:path');
 const { URL } = require('node:url');
@@ -34,8 +36,6 @@ const {
   buildResponseCookies,
   getDuration,
 } = require('./helpers.ts');
-
-console.log('this is baseFetch', baseFetch);
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
@@ -47,7 +47,7 @@ const handleRequest = (request: any, options: any): void => {
 
   const headers = options.headers || {};
 
-  const requestId = headers[headerName] ? headers[headerName][0] : null;
+  const requestId = headers[headerName] ? headers[headerName] : null;
 
   if (!requestId) {
     return;
@@ -143,7 +143,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name][0];
+          mimeType = headers[name];
           break;
         }
       }
@@ -413,7 +413,9 @@ const nextWorkFetch = (): ((
   options: RequestOptions,
   defaults?: Default
 ) => Promise<any>) => {
-  // createNextWorkServer();
+  if (process.env.NODE_ENV === 'development') {
+    createNextWorkServer();
+  }
   return function fetch(
     resource,
     options,

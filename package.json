@@ -11,14 +11,13 @@
   ],
   "scripts": {
     "test": "jest",
-    "prebuild": "babel node_modules/node-fetch --out-dir node_modules/node-fetch --config-file ./.babelrc",
-    "build": "tsc -p tsconfig.json",
-    "postinstall": "node postinstall.js"
+    "prepublishOnly": "./.babelrc && tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.2",
     "cookie": "^0.5.0",
-    "nanoid": "^2.0.3",
+    "nanoid": "4.0.2",
     "node-fetch": "^3.3.1",
     "query-string": "^8.1.0",
     "set-cookie-parser": "^2.6.0"
