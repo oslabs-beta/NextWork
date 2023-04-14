@@ -1,5 +1,5 @@
 {
-  "name": "nextty-work",
+  "name": "next-work",
   "version": "1.0.4",
   "main": "./lib/nextWork.js",
   "module": "./lib/nextWork.js",
@@ -7,18 +7,20 @@
     "lib/",
     "README.md",
     "postinstall.js",
-    "node_modules/node-fetch/lib"
+    "node_modules/node-fetch/**/*",
+    "node_modules/nanoid/**/*"
   ],
   "scripts": {
     "test": "jest",
-    "prepublishOnly": "tsc -p tsconfig.json",
+    "prepublishOnly": "babel node_modules/node-fetch --out-dir node_modules/node-fetch --config-file ./.babelrc && tsc -p tsconfig.json",
     "build": "tsc -p tsconfig.json",
-    "postinstall": "node postinstall.js"
+    "prebuild": "babel node_modules/node-fetch --out-dir node_modules/node-fetch --config-file ./.babelrc",
+    "postpublish": ""
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.2",
     "cookie": "^0.5.0",
-    "nanoid": "4.0.2",
+    "nanoid": "^2.0.3",
     "node-fetch": "^3.3.1",
     "query-string": "^8.1.0",
     "set-cookie-parser": "^2.6.0"
