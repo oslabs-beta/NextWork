@@ -1,6 +1,6 @@
 {
   "name": "nextty-work",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "main": "./lib/nextWork.js",
   "module": "./lib/nextWork.js",
   "files": [
@@ -11,8 +11,9 @@
   ],
   "scripts": {
     "test": "jest",
-    "prepublishOnly": "./.babelrc && tsc -p tsconfig.json",
-    "build": "tsc -p tsconfig.json"
+    "prepublishOnly": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "postinstall": "node postinstall.js"
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.2",
