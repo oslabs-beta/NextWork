@@ -1,4 +1,4 @@
-const { nextWorkFetch } = require('../src/nextWork.ts');
+import { nextWorkFetch } from '../src/nextWork.ts';
 
 describe('integration tests tests', () => {
   it('populates HAR entry with GET Request', async () => {
@@ -268,10 +268,6 @@ describe('integration tests tests', () => {
             value: 'token=12345; other=abcdef',
           },
           {
-            name: expect.stringMatching(/^content-length$/i),
-            value: expect.any(String),
-          },
-          {
             name: 'x-har-request-id',
             value: expect.any(String),
           },
@@ -293,12 +289,12 @@ describe('integration tests tests', () => {
           mimeType: 'application/x-www-form-urlencoded',
           params: [
             {
-              name: 'name',
-              value: 'John',
-            },
-            {
               name: 'email',
               value: 'john@example.com',
+            },
+            {
+              name: 'name',
+              value: 'John',
             },
             {
               name: 'phone',

@@ -8,26 +8,25 @@ import {
   CustomResponse,
   InstrumentedHttpsAgent,
   InstrumentedHttpAgent,
-  AddRequestOptions,
 } from './interfaces';
-
 import http, {
   IncomingMessage,
+  Agent as HttpAgent,
   ClientRequest,
   ClientRequestArgs,
 } from 'node:http';
-const { Agent: HttpAgent } = require('node:http');
-const { Response } = require('node-fetch');
-const { Agent: HttpsAgent } = require('node:https');
-const transpiledFetch = require('node-fetch');
-console.log(`this is transpiled fetch`, transpiledFetch);
-const baseFetch: BaseFetch = transpiledFetch.default;
-const { nanoid } = require('nanoid');
-console.log('this is nanoid', nanoid);
-const fs = require('node:fs');
-const path = require('node:path');
-const { URL } = require('node:url');
-const {
+
+import { Agent as HttpsAgent } from 'node:https';
+// @ts-ignore
+import fetch, { RequestInfo, ResponseInit, Response } from 'node-fetch';
+// @ts-ignore
+const baseFetch: BaseFetch = fetch;
+import { nanoid } from 'nanoid';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { URL } from 'node:url';
+
+import {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -35,10 +34,13 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('./helpers.ts');
+} from './helpers';
+
 const generateId = nanoid;
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
+
+import { AddRequestOptions } from './interfaces';
 
 const handleRequest = (request: any, options: any): void => {
   if (!options || typeof options !== 'object') {
@@ -98,7 +100,8 @@ const handleRequest = (request: any, options: any): void => {
       bodySize: -1,
     },
   };
-
+  // globalEntry = entry;
+  // capturing writes to the ClientRequest stream
   const _write = request.write;
   const _end = request.end;
   let requestBody: string | Buffer;
@@ -251,7 +254,9 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
+export const createAgentClass = (
+  BaseAgent: typeof HttpAgent | typeof HttpsAgent
+) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
@@ -306,7 +311,7 @@ const instrumentAgentInstance = (
   }
 };
 
-function getInputUrl(resource: string | { href: string }): URL {
+export function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
     url = resource;
@@ -336,7 +341,7 @@ const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
       const agentFn = options.agent as (
-        this: typeof HttpAgent | typeof HttpsAgent,
+        this: HttpAgent | HttpsAgent,
         ...args: any[]
       ) => any; // Type guard
 
@@ -408,14 +413,12 @@ const createNextWorkServer = (): void => {
 };
 
 // Wrap and return custom fetch with HAR entry tracking
-const nextWorkFetch = (): ((
+export const nextWorkFetch = (): ((
   resource: string,
   options: RequestOptions,
   defaults?: Default
 ) => Promise<any>) => {
-  if (process.env.NODE_ENV === 'development') {
-    createNextWorkServer();
-  }
+  // createNextWorkServer();
   return function fetch(
     resource,
     options,
@@ -533,9 +536,5 @@ const nextWorkFetch = (): ((
   };
 };
 
-const fetch = nextWorkFetch();
-module.exports = {
-  getInputUrl,
-  createAgentClass,
-  nextWorkFetch,
-};
+// @ts-ignore
+fetch = nextWorkFetch();
