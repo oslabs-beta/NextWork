@@ -1,4 +1,4 @@
-import {
+const {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -6,12 +6,13 @@ import {
   buildParams,
   buildResponseCookies,
   getDuration,
-} from '../src/helpers.ts';
+} = require('../src/helpers');
+const { Headers } = require('node-fetch');
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
     const headers = {
-      Cookie: 'name1=value1; name2=value2',
+      Cookie: ['name1=value1; name2=value2'],
       'Other-Header': ['value'],
     };
     const expectedCookies = [
@@ -33,9 +34,9 @@ describe('Test buildParams', () => {
   it('should extract params from a query string', () => {
     const urlQuery = 'name=value&key=value1&key=value2';
     const expectedParams = [
+      { name: 'name', value: 'value' },
       { name: 'key', value: 'value1' },
       { name: 'key', value: 'value2' },
-      { name: 'name', value: 'value' },
     ];
 
     expect(buildParams(urlQuery)).toEqual(expectedParams);

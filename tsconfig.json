@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "module": "ES2020",
+    "module": "CommonJS",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "target": "ES2015",
+    "target": "ES2020",
     "strictNullChecks": true,
     "noImplicitAny": true,
     "lib": ["dom", "dom.iterable", "esnext"],

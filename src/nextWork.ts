@@ -8,24 +8,22 @@ import {
   CustomResponse,
   InstrumentedHttpsAgent,
   InstrumentedHttpAgent,
+  AddRequestOptions,
 } from './interfaces';
 import http, {
   IncomingMessage,
-  Agent as HttpAgent,
   ClientRequest,
   ClientRequestArgs,
 } from 'node:http';
-import { RequestInfo, ResponseInit, Response } from 'node-fetch';
-import { Agent as HttpsAgent } from 'node:https';
-import fetch from 'node-fetch';
-// @ts-ignore
-const baseFetch: BaseFetch = fetch;
-import { nanoid } from 'nanoid';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import { URL } from 'node:url';
-
-import {
+const { Agent: HttpAgent } = require('node:http');
+const { Response } = require('node-fetch');
+const { Agent: HttpsAgent } = require('node:https');
+const baseFetch: BaseFetch = require('node-fetch');
+const generateId = require('nanoid');
+const fs = require('node:fs');
+const path = require('node:path');
+const { URL } = require('node:url');
+const {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -33,13 +31,9 @@ import {
   buildParams,
   buildResponseCookies,
   getDuration,
-} from './helpers';
-
-const generateId = nanoid;
+} = require('./helpers');
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
-
-import { AddRequestOptions } from './interfaces';
 
 const handleRequest = (request: any, options: any): void => {
   if (!options || typeof options !== 'object') {
@@ -48,7 +42,7 @@ const handleRequest = (request: any, options: any): void => {
 
   const headers = options.headers || {};
 
-  const requestId = headers[headerName] ? headers[headerName] : null;
+  const requestId = headers[headerName] ? headers[headerName][0] : null;
 
   if (!requestId) {
     return;
@@ -99,8 +93,7 @@ const handleRequest = (request: any, options: any): void => {
       bodySize: -1,
     },
   };
-  // globalEntry = entry;
-  // capturing writes to the ClientRequest stream
+
   const _write = request.write;
   const _end = request.end;
   let requestBody: string | Buffer;
@@ -145,7 +138,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name];
+          mimeType = headers[name][0];
           break;
         }
       }
@@ -253,9 +246,7 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-export const createAgentClass = (
-  BaseAgent: typeof HttpAgent | typeof HttpsAgent
-) => {
+const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
@@ -310,7 +301,7 @@ const instrumentAgentInstance = (
   }
 };
 
-export function getInputUrl(resource: string | { href: string }): URL {
+function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
     url = resource;
@@ -340,7 +331,7 @@ const getAgent = (resource: string, options: RequestOptions) => {
   if (options.agent) {
     if (typeof options.agent === 'function') {
       const agentFn = options.agent as (
-        this: HttpAgent | HttpsAgent,
+        this: typeof HttpAgent | typeof HttpsAgent,
         ...args: any[]
       ) => any; // Type guard
 
@@ -374,7 +365,7 @@ const createNextWorkServer = (): void => {
       // as GUI will be Chrome Extension
       if (request.method === 'GET' && request.url === '/') {
         const data = fs.readFile(
-          path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
+          path.join(__dirname, '../../../nextWorkFetchLibrary/stream.html'),
           'utf-8',
           (err: NodeJS.ErrnoException | null, data: string) => {
             if (err) {
@@ -412,15 +403,17 @@ const createNextWorkServer = (): void => {
 };
 
 // Wrap and return custom fetch with HAR entry tracking
-export const nextWorkFetch = (): ((
+const nextWorkFetch = (): ((
   resource: string,
   options: RequestOptions,
   defaults?: Default
 ) => Promise<any>) => {
-  // createNextWorkServer();
+  if (process.env.NODE_ENV === 'development') {
+    createNextWorkServer();
+  }
   return function fetch(
     resource,
-    options,
+    options = {},
     defaults = { trackRequest: true, harPageRef: '' }
   ) {
     if (defaults.trackRequest === false) {
@@ -535,4 +528,11 @@ export const nextWorkFetch = (): ((
   };
 };
 
-// const fetch = nextWorkFetch();
+// @ts-ignore
+fetch = nextWorkFetch();
+
+module.exports = {
+  getInputUrl,
+  createAgentClass,
+  nextWorkFetch,
+};
