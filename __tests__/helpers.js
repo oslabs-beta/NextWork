@@ -6,13 +6,13 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('../src/helpers.ts');
+} = require('../src/helpers');
 const { Headers } = require('node-fetch');
 
 describe('Test buildRequestCookies', () => {
   it('should extract cookies from headers', () => {
     const headers = {
-      Cookie: 'name1=value1; name2=value2',
+      Cookie: ['name1=value1; name2=value2'],
       'Other-Header': ['value'],
     };
     const expectedCookies = [

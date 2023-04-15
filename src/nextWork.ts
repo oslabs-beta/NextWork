@@ -10,7 +10,6 @@ import {
   InstrumentedHttpAgent,
   AddRequestOptions,
 } from './interfaces';
-
 import http, {
   IncomingMessage,
   ClientRequest,
@@ -19,11 +18,8 @@ import http, {
 const { Agent: HttpAgent } = require('node:http');
 const { Response } = require('node-fetch');
 const { Agent: HttpsAgent } = require('node:https');
-const transpiledFetch = require('node-fetch');
-console.log(`this is transpiled fetch`, transpiledFetch);
-const baseFetch: BaseFetch = transpiledFetch.default;
-const { nanoid } = require('nanoid');
-console.log('this is nanoid', nanoid);
+const baseFetch: BaseFetch = require('node-fetch');
+const generateId = require('nanoid');
 const fs = require('node:fs');
 const path = require('node:path');
 const { URL } = require('node:url');
@@ -35,8 +31,7 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('./helpers.ts');
-const generateId = nanoid;
+} = require('./helpers');
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
 
@@ -47,7 +42,7 @@ const handleRequest = (request: any, options: any): void => {
 
   const headers = options.headers || {};
 
-  const requestId = headers[headerName] ? headers[headerName] : null;
+  const requestId = headers[headerName] ? headers[headerName][0] : null;
 
   if (!requestId) {
     return;
@@ -143,7 +138,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name];
+          mimeType = headers[name][0];
           break;
         }
       }
@@ -370,7 +365,7 @@ const createNextWorkServer = (): void => {
       // as GUI will be Chrome Extension
       if (request.method === 'GET' && request.url === '/') {
         const data = fs.readFile(
-          path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
+          path.join(__dirname, '../../../nextWorkFetchLibrary/stream.html'),
           'utf-8',
           (err: NodeJS.ErrnoException | null, data: string) => {
             if (err) {
@@ -418,7 +413,7 @@ const nextWorkFetch = (): ((
   }
   return function fetch(
     resource,
-    options,
+    options = {},
     defaults = { trackRequest: true, harPageRef: '' }
   ) {
     if (defaults.trackRequest === false) {
@@ -533,7 +528,9 @@ const nextWorkFetch = (): ((
   };
 };
 
-const fetch = nextWorkFetch();
+// @ts-ignore
+fetch = nextWorkFetch();
+
 module.exports = {
   getInputUrl,
   createAgentClass,
