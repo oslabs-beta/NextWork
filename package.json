@@ -1,6 +1,6 @@
 {
   "name": "next-work",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "./lib/nextWork.js",
   "module": "./lib/nextWork.js",
   "files": [
