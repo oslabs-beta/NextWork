@@ -15,15 +15,18 @@ import http, {
   ClientRequest,
   ClientRequestArgs,
 } from 'node:http';
-const { Agent: HttpAgent } = require('node:http');
-const { Response } = require('node-fetch');
-const { Agent: HttpsAgent } = require('node:https');
-const baseFetch: BaseFetch = require('node-fetch');
-const generateId = require('nanoid');
-const fs = require('node:fs');
-const path = require('node:path');
-const { URL } = require('node:url');
-const {
+import { Agent as HttpAgent } from 'node:http';
+// import { Response } from 'node-fetch';
+import { Agent as HttpsAgent } from 'node:https';
+import fetch from 'node-fetch';
+// @ts-ignore
+const baseFetch: BaseFetch = fetch;
+import { nanoid } from 'nanoid';
+const generateId = nanoid;
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { URL } from 'node:url';
+import {
   addHeaders,
   buildRequestCookies,
   buildHeaders,
@@ -31,7 +34,7 @@ const {
   buildParams,
   buildResponseCookies,
   getDuration,
-} = require('./helpers');
+} from './helpers';
 const headerName = 'x-har-request-id';
 const harEntryMap = new Map();
 
@@ -42,7 +45,7 @@ const handleRequest = (request: any, options: any): void => {
 
   const headers = options.headers || {};
 
-  const requestId = headers[headerName] ? headers[headerName][0] : null;
+  const requestId = headers[headerName] ? headers[headerName] : null;
 
   if (!requestId) {
     return;
@@ -246,7 +249,9 @@ const handleRequest = (request: any, options: any): void => {
   });
 };
 
-const createAgentClass = (BaseAgent: typeof HttpAgent | typeof HttpsAgent) => {
+export const createAgentClass = (
+  BaseAgent: typeof HttpAgent | typeof HttpsAgent
+) => {
   //http(s).Agent
   class HarAgent extends BaseAgent {
     // what args are going into constructor?
@@ -301,7 +306,7 @@ const instrumentAgentInstance = (
   }
 };
 
-function getInputUrl(resource: string | { href: string }): URL {
+export function getInputUrl(resource: string | { href: string }): URL {
   let url: string;
   if (typeof resource === 'string') {
     url = resource;
@@ -365,7 +370,7 @@ const createNextWorkServer = (): void => {
       // as GUI will be Chrome Extension
       if (request.method === 'GET' && request.url === '/') {
         const data = fs.readFile(
-          path.join(__dirname, '../../../nextWorkFetchLibrary/stream.html'),
+          path.join(__dirname, '../nextWorkFetchLibrary/stream.html'),
           'utf-8',
           (err: NodeJS.ErrnoException | null, data: string) => {
             if (err) {
@@ -403,14 +408,13 @@ const createNextWorkServer = (): void => {
 };
 
 // Wrap and return custom fetch with HAR entry tracking
-const nextWorkFetch = (): ((
+export const nextWorkFetch = (): ((
   resource: string,
   options: RequestOptions,
   defaults?: Default
 ) => Promise<any>) => {
-  if (process.env.NODE_ENV === 'development') {
-    createNextWorkServer();
-  }
+  createNextWorkServer();
+
   return function fetch(
     resource,
     options = {},
@@ -530,9 +534,3 @@ const nextWorkFetch = (): ((
 
 // @ts-ignore
 fetch = nextWorkFetch();
-
-module.exports = {
-  getInputUrl,
-  createAgentClass,
-  nextWorkFetch,
-};

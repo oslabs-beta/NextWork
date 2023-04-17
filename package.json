@@ -1,15 +1,16 @@
 {
   "name": "nextty-work",
-  "version": "1.6.0",
-  "main": "./lib/nextWork.js",
-  "module": "./lib/nextWork.js",
+  "version": "1.0.0",
+  "main": "./dist/bundle.js",
+  "module": "./dist/bundle.js",
   "files": [
-    "lib/",
+    "dist/",
     "README.md",
     "postinstall.js"
   ],
   "scripts": {
     "test": "jest",
+    "build": "webpack",
     "prepublishOnly": "tsc -p tsconfig.json",
     "postinstall": "node postinstall.js"
   },
@@ -17,18 +18,25 @@
     "@types/set-cookie-parser": "^2.4.2",
     "cookie": "^0.5.0",
     "nanoid": "^2.1.11",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.3.1",
     "query-string": "^8.1.0",
     "querystring": "^0.2.1",
-    "set-cookie-parser": "^2.6.0"
+    "set-cookie-parser": "^2.6.0",
+    "webpack": "^5.79.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
     "@types/cookie": "^0.5.1",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
+    "babel-loader": "^9.1.2",
     "jest": "^29.5.0",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.0.2"
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.2",
+    "webpack-cli": "^5.0.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",
