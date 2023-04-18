@@ -5,18 +5,16 @@ on:
     branches:
       - main
 jobs:
-  release:
-    name: publish
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2.1.1
-      - name: node
-        uses: actions/setup-node@v1.4.2
+      - uses: actions/checkout@v3
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org
-      - name: publish
-        run: npm publish --access public
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci --ignore-scripts
+      - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
