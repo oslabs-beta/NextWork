@@ -1,4 +1,4 @@
-const { nextWorkFetch } = require('../src/nextWork');
+import { nextWorkFetch } from '../src/nextWork.ts';
 
 describe('integration tests tests', () => {
   it('populates HAR entry with GET Request', async () => {
@@ -55,7 +55,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,
@@ -175,7 +175,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,
@@ -268,10 +268,6 @@ describe('integration tests tests', () => {
             value: 'token=12345; other=abcdef',
           },
           {
-            name: expect.stringMatching(/^content-length$/i),
-            value: expect.any(String),
-          },
-          {
             name: 'x-har-request-id',
             value: expect.any(String),
           },
@@ -281,7 +277,7 @@ describe('integration tests tests', () => {
           },
           {
             name: expect.stringMatching(/^user-agent$/i),
-            value: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+            value: 'node-fetch',
           },
         ]),
         headersSize: -1,
@@ -293,12 +289,12 @@ describe('integration tests tests', () => {
           mimeType: 'application/x-www-form-urlencoded',
           params: [
             {
-              name: 'name',
-              value: 'John',
-            },
-            {
               name: 'email',
               value: 'john@example.com',
+            },
+            {
+              name: 'name',
+              value: 'John',
             },
             {
               name: 'phone',

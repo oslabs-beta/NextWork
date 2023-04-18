@@ -160,6 +160,7 @@ export interface RequestOptions {
 
 export interface CustomResponseInit extends ResponseInit {
   ok?: boolean;
+  harEntry?: Entry;
 }
 
 export interface CustomResponse extends Response {

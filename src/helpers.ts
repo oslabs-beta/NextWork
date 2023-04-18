@@ -1,7 +1,7 @@
-const cookie = require('cookie');
-const setCookie = require('set-cookie-parser');
-// const querystring = require('query-string');
-const querystring = require('querystring');
+import cookie from 'cookie';
+import setCookie from 'set-cookie-parser';
+import querystring from 'query-string';
+// import querystring from 'querystring';
 import {
   QueryParam,
   Cookie,
@@ -11,9 +11,8 @@ import {
 } from './interfaces';
 import { IncomingHttpHeaders } from 'node:http';
 import { URLSearchParams } from 'node:url';
-const { Headers } = require('node-fetch');
 
-const addHeaders = (
+export const addHeaders = (
   oldHeaders: HeadersInit | undefined,
   requestIdHeader: { [key: string]: string }
 ): Headers => {
@@ -31,23 +30,23 @@ const addHeaders = (
   }
 };
 
-const buildRequestCookies = (headers: Record<string, string[]>): Cookie[] => {
+export const buildRequestCookies = (
+  headers: Record<string, string>
+): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
-      for (const cookieString of headers[header]) {
-        const parsed = cookie.parse(cookieString);
-        for (const name in parsed) {
-          const value = parsed[name];
-          cookies.push({ name, value });
-        }
+      const parsed = cookie.parse(headers[header]);
+      for (const name in parsed) {
+        const value = parsed[name];
+        cookies.push({ name, value });
       }
     }
   }
   return cookies;
 };
 
-const buildHeaders = (headers: string[]): HeaderAndQueryString[] => {
+export const buildHeaders = (headers: string[]): HeaderAndQueryString[] => {
   const list: HeaderAndQueryString[] = [];
   if (Array.isArray(headers)) {
     for (let i = 0; i < headers.length; i += 2) {
@@ -70,11 +69,13 @@ const buildHeaders = (headers: string[]): HeaderAndQueryString[] => {
   return list;
 };
 
-const buildQueryParams = (queryParams: URLSearchParams): QueryParam[] => {
+export const buildQueryParams = (
+  queryParams: URLSearchParams
+): QueryParam[] => {
   return [...queryParams].map(([name, value]) => ({ name, value }));
 };
 
-const buildParams = (paramString: string): Params[] => {
+export const buildParams = (paramString: string): Params[] => {
   const params: Params[] = [];
   const parsed = querystring.parse(paramString) as Record<string, string>;
 
@@ -90,7 +91,9 @@ const buildParams = (paramString: string): Params[] => {
   return params;
 };
 
-const buildResponseCookies = (headers: IncomingHttpHeaders): Cookie[] => {
+export const buildResponseCookies = (
+  headers: IncomingHttpHeaders
+): Cookie[] => {
   const cookies: Cookie[] = [];
   const setCookies = headers['set-cookie'];
   if (setCookies) {
@@ -101,7 +104,7 @@ const buildResponseCookies = (headers: IncomingHttpHeaders): Cookie[] => {
       } catch (err) {
         return;
       }
-      parsed.forEach((cookie: Cookie) => {
+      parsed.forEach((cookie) => {
         const { name, value, path, domain, expires, httpOnly, secure } = cookie;
         if (!name || !value) return;
         const harCookie: Cookie = {
@@ -127,18 +130,11 @@ const buildResponseCookies = (headers: IncomingHttpHeaders): Cookie[] => {
   return cookies;
 };
 
-const getDuration = (a: [number, number], b: [number, number]): number => {
+export const getDuration = (
+  a: [number, number],
+  b: [number, number]
+): number => {
   const seconds = b[0] - a[0];
   const nanoseconds = b[1] - a[1];
   return seconds * 1000 + nanoseconds / 1e6;
-};
-
-module.exports = {
-  addHeaders,
-  buildRequestCookies,
-  buildHeaders,
-  buildQueryParams,
-  buildParams,
-  buildResponseCookies,
-  getDuration,
 };
