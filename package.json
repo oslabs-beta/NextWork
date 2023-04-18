@@ -1,8 +1,9 @@
 {
-  "name": "nextty-work",
+  "name": "next-work",
   "version": "1.0.0",
-  "main": "./dist/bundle.js",
-  "module": "./dist/bundle.js",
+  "main": "./dist/nextWork.js",
+  "module": "./dist/nextWork.js",
+  "types": "./dist/*.d.ts",
   "files": [
     "dist/",
     "README.md",
@@ -11,13 +12,13 @@
   "scripts": {
     "test": "jest",
     "build": "webpack",
-    "prepublishOnly": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
     "postinstall": "node postinstall.js"
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.2",
     "cookie": "^0.5.0",
-    "nanoid": "^2.1.11",
+    "nanoid": "^4.0.2",
     "node-fetch": "^3.3.1",
     "query-string": "^8.1.0",
     "querystring": "^0.2.1",
@@ -31,6 +32,7 @@
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
     "babel-loader": "^9.1.2",
+    "clean-webpack-plugin": "^4.0.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",

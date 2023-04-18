@@ -1,12 +1,10 @@
 const webpack = require('webpack');
 const path = require('path');
-const fs = require('fs');
 const pkJson = require('./package.json');
-const nodeExternals = require('webpack-node-externals');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   target: 'node',
-  externals: [nodeExternals()],
   entry: './src/nextWork.ts',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -20,15 +18,15 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['@babel/preset-env'],
-        },
-        include: [path.resolve(__dirname, './node_modules./node-fetch')],
-        exclude: /node_modules/,
-      },
     ],
   },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  plugins: [
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: false,
+      cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, './dist')],
+    }),
+  ],
 };

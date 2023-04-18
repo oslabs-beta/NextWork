@@ -8,7 +8,7 @@
     "target": "ES2020",
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["ES2020", "dom"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,

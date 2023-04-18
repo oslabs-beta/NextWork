@@ -1,7 +1,7 @@
 import cookie from 'cookie';
 import setCookie from 'set-cookie-parser';
-// import querystring from 'query-string';
-import querystring from 'querystring';
+import querystring from 'query-string';
+// import querystring from 'querystring';
 import {
   QueryParam,
   Cookie,
@@ -31,17 +31,15 @@ export const addHeaders = (
 };
 
 export const buildRequestCookies = (
-  headers: Record<string, string[]>
+  headers: Record<string, string>
 ): Cookie[] => {
   const cookies: Cookie[] = [];
   for (const header in headers) {
     if (header.toLowerCase() === 'cookie') {
-      for (const cookieString of headers[header]) {
-        const parsed = cookie.parse(cookieString);
-        for (const name in parsed) {
-          const value = parsed[name];
-          cookies.push({ name, value });
-        }
+      const parsed = cookie.parse(headers[header]);
+      for (const name in parsed) {
+        const value = parsed[name];
+        cookies.push({ name, value });
       }
     }
   }

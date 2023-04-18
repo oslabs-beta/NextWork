@@ -18,11 +18,11 @@ import http, {
 import { Agent as HttpAgent } from 'node:http';
 // import { Response } from 'node-fetch';
 import { Agent as HttpsAgent } from 'node:https';
-import fetch from 'node-fetch';
+import { default as base } from 'node-fetch';
 // @ts-ignore
-const baseFetch: BaseFetch = fetch;
+const baseFetch: BaseFetch = base;
 import { nanoid } from 'nanoid';
-const generateId = nanoid;
+// const generateId = nanoid;
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { URL } from 'node:url';
@@ -141,7 +141,7 @@ const handleRequest = (request: any, options: any): void => {
 
       for (const name in headers) {
         if (name.toLowerCase() === 'content-type') {
-          mimeType = headers[name][0];
+          mimeType = headers[name];
           break;
         }
       }
@@ -424,7 +424,7 @@ export const nextWorkFetch = (): ((
       return baseFetch(resource, options);
     }
 
-    const requestId = generateId();
+    const requestId = nanoid();
 
     options = Object.assign({}, options, {
       //add unique request id to headers
