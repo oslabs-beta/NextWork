@@ -5,7 +5,7 @@ import TableHeader from "./TableHeader";
 //import row sub-component
 
 const Table = (props) => {
-  const { entries } = props;
+  const { filteredEntries } = props;
   //const blah = React.useState(0);
   //React.useEffect(() => {set some state})
   // const entries = [
@@ -28,7 +28,7 @@ const Table = (props) => {
   return (
     <table className={"table"}>
       <TableHeader />
-      {entries.map((entry, index) => (
+      {filteredEntries.map((entry, index) => (
         <Row
           key={index}
           name={entry.request.url}

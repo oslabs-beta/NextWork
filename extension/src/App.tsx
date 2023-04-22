@@ -13,6 +13,7 @@ export default function App() {
     //use array.filter?
     //check through each entry in array to see if it contains the string
     //setFilteredEntries to be only the subset of entries that contains the string
+    setFilteredEntries(entries.filter((entry) => entry.request.url.includes(str)));
   };
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function App() {
   return (
     <div>
       <div className="App">
-        <FilterBar entries={entries} handleInput={() => handleInput} />
+        <FilterBar entries={entries} handleInput={ handleInput} />
         <Table filteredEntries={filteredEntries} />
         {/* <Footer /> */}
       </div>
