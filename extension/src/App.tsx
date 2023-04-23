@@ -6,14 +6,16 @@ import { useState, useEffect } from "react";
 
 export default function App() {
   const [entries, setEntries] = useState([]);
+  const [filterInput, setFilterInput] = useState("");
 
-  const [filteredEntries, setFilteredEntries] = useState(entries);
+  const [filteredEntries, setFilteredEntries] = useState([]);
 
-  const handleInput = (str) => {
+  const handleInput = (filterInput) => {
     //use array.filter?
     //check through each entry in array to see if it contains the string
     //setFilteredEntries to be only the subset of entries that contains the string
-    setFilteredEntries(entries.filter((entry) => entry.request.url.includes(str)));
+    console.log(filterInput);
+    setFilterInput(filterInput);
   };
 
   useEffect(() => {
@@ -29,10 +31,19 @@ export default function App() {
     });
   });
 
+  useEffect(() => {
+    setFilteredEntries(
+      entries.filter((entry) =>
+      //helper function to take entry, extract relevant fields, return array. That way we can search by everything, not just URL
+        JSON.stringify(Object.values(entry.request)).toLowerCase().includes(filterInput.toLowerCase())
+      )
+    );
+  }, [entries, filterInput]);
+
   return (
     <div>
       <div className="App">
-        <FilterBar entries={entries} handleInput={ handleInput} />
+        <FilterBar handleInput={handleInput} />
         <Table filteredEntries={filteredEntries} />
         {/* <Footer /> */}
       </div>

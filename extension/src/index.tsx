@@ -10,18 +10,8 @@ let harTable;
 chrome.devtools.panels.create("NextWork", null, "panel.html", (panel) => {
   // code invoked on panel creation
   panel.onShown.addListener((extPanelWindow) => {
-    // let sayHello = extPanelWindow.document.querySelector("#sayHello");
-    // youClickedOn = extPanelWindow.document.querySelector("#youClickedOn");
     dataContainer = extPanelWindow.document.querySelector("#data");
     harTable = extPanelWindow.document.querySelector(".har-table");
-    // sayHello.addEventListener("click", () => {
-    //   // show a greeting alert in the inspected page
-    //   chrome.devtools.inspectedWindow.eval(
-    //     'alert("Hello from the NextWork Extension");'
-    //   );
-    // });
-
-    
     const container = extPanelWindow.document.getElementById("root");
     const root = createRoot(container);
 
@@ -62,30 +52,6 @@ const appendHar = (data) => {
   // harTableHead.append(row);
   // return harTable;
 };
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   // if (message.data) {
-//   //   console.log('Received message from service worker:', message.data);
-//   //   // dataContainer.innerHTML = `${message.data}`;
-
-//   if (message.data) {
-//     console.log("Received message from service worker in index.tsx:  ", message.data);
-
-//     dataContainer.append(appendHar(JSON.parse(message.data)));
-//   }
-
-//   // Messages from content scripts should have sender.tab set
-//   // if (sender.tab && message.click == true) {
-//   //   if (youClickedOn) {
-//   //     // console.log("panels:", chrome.devtools.panels);
-//   //     youClickedOn.innerHTML = `You clicked on position (${message.xPosition}, ${message.yPosition}) in the inspected page.`;
-//   //   }
-//   //   sendResponse({
-//   //     xPosition: message.xPosition,
-//   //     yPosition: message.yPosition,
-//   //   });
-//   // }
-// });
 
 // Create a connection to the background service worker
 const backgroundPageConnection = chrome.runtime.connect({
