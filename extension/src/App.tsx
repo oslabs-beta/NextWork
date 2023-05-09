@@ -34,8 +34,10 @@ export default function App() {
   useEffect(() => {
     setFilteredEntries(
       entries.filter((entry) =>
-      //helper function to take entry, extract relevant fields, return array. That way we can search by everything, not just URL
-        JSON.stringify(Object.values(entry.request)).toLowerCase().includes(filterInput.toLowerCase())
+        //helper function to take entry, extract relevant fields, return array. That way we can search by everything, not just URL
+        JSON.stringify(Object.values(entry.request))
+          .toLowerCase()
+          .includes(filterInput.toLowerCase())
       )
     );
   }, [entries, filterInput]);
@@ -44,8 +46,9 @@ export default function App() {
     <div>
       <div className="App">
         <FilterBar handleInput={handleInput} />
+        <br />
         <Table filteredEntries={filteredEntries} />
-        {/* <Footer /> */}
+        <Footer entries={entries} filteredEntries={filteredEntries} />
       </div>
     </div>
   );
