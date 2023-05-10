@@ -2,46 +2,87 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
 }
 
 .har-table td,
 .har-table th,
 .table td,
 .table th {
-  padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #444444;
+  padding: 10px;
   text-align: left;
-  left: 0;
 }
 
-tr:nth-child(even) {
-  background-color: white;
+table tr:nth-child(even) {
+  background-color: #292929;
 }
 
-tr:nth-child(odd) {
-  background-color: #f2f2f2;
+table tr:nth-child(odd) {
+  background-color: #202020;
+}
+
+table tr:hover {
+  background-color: #555555;
 }
 
 .har-table th,
 .table th {
-  background-color: #f2f2f2;
+  background-color: #292929;
+  color: #a9a9a9;
 }
-.filterBar {
+
+/* .filterBar {
   background-color: #f2f2f2;
   padding: 0.25rem;
   margin-bottom: 1 rem;
+} */
+
+input[type="text"] {
+  background-color: #292929;
+  border: 1px solid #444444;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px 10px;
+  width: 200px;
 }
 
-.footer {
+input[type="text"]::placeholder {
+  color: #a9a9a9;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #555555;
+}
+
+/* .footer {
   background-color: #f2f2f2;
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 2.5rem;
+} */
+
+footer {
+  background-color: #292929;
+  border-top: 1px solid #444444;
+  color: #a9a9a9;
+  font-family: "Courier New", Courier, monospace;
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .App {
-  background-color: white;
+  background-color: #242424;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+}
+
+body {
+  background-color: #292929;
 }
