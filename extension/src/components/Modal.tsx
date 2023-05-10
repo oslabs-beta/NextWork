@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import ModalContent from './ModalContent';
+import React, { useState } from "react";
+import ModalContent from "./ModalContent";
 
 interface ModalProps {
   onClose: () => void;
@@ -16,17 +16,34 @@ const Modal: React.FC<ModalProps> = ({ onClose, data, rowIndex }) => {
 
   return (
     <div className="modal">
-      <button className="close-button" onClick={onClose}>
-        x
-      </button>
-      <div className="tabs">
-        {['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'].map((tab, index) => (
-          <button key={index} onClick={() => handleTabClick(index)}>
-            {tab}
-          </button>
-        ))}
-      </div>
-      <ModalContent data={data} activeTab={activeTab} />
+      <br />
+      <table className="table">
+        <tr>
+          <td>
+            <div className="tabs">
+              {["Headers", "Response", "Timing", "Tab4", "Tab5"].map(
+                (tab, index) => (
+                  <button
+                    className="tab"
+                    key={index}
+                    onClick={() => handleTabClick(index)}
+                  >
+                    {tab}
+                  </button>
+                )
+              )}
+            </div>
+          </td>
+          <td>
+            <ModalContent data={data} activeTab={activeTab} />
+          </td>
+          <td>
+            <button className="close-button" onClick={onClose}>
+              x
+            </button>
+          </td>
+        </tr>
+      </table>
     </div>
   );
 };

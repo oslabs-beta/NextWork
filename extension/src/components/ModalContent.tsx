@@ -1,5 +1,5 @@
-import React from 'react';
-import WaterfallChart from './WaterfallChart';
+import React from "react";
+import WaterfallChart from "./WaterfallChart";
 
 interface ModalContentProps {
   data: any;
@@ -15,7 +15,7 @@ interface Headers {
 const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
   const renderHeaders = (headers: Headers[]) => {
     return (
-      <table>
+      <table className="table">
         <thead>
           <tr>
             <th>Name</th>
@@ -35,22 +35,28 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
   };
 
   const isHeadersTab =
-    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Headers';
+    ["Headers", "Response", "Timing", "Tab4", "Tab5"][activeTab] === "Headers";
   const isTimingTab =
-    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Timing';
+    ["Headers", "Response", "Timing", "Tab4", "Tab5"][activeTab] === "Timing";
 
   return (
-    <div className="tab-content">
-      <h3>{`Content for ${
+    <div className="tab-content" style={{ maxWidth: '100%' }}>
+      {/* <h3>{`Content for ${
         ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab]
-      }`}</h3>
+      }`}</h3> */}
       {isHeadersTab ? (
-        <>
-          <h4>Request Headers</h4>
-          {renderHeaders(data.request.headers)}
-          <h4>Response Headers</h4>
-          {renderHeaders(data.response.headers)}
-        </>
+        <table className="table" id="req-res-table">
+          <thead>
+            <tr>
+              <td>Request Headers</td>
+              <td>Response Headers</td>
+            </tr>
+          </thead>
+          <tr>
+            <td>{renderHeaders(data.request.headers)}</td>
+            <td style={{ maxWidth: '100%' }}>{renderHeaders(data.response.headers)}</td>
+          </tr>
+        </table>
       ) : isTimingTab ? (
         <WaterfallChart timings={data.timings} />
       ) : (
