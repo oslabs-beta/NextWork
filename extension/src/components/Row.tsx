@@ -1,17 +1,25 @@
 import "../styles.css";
 //import sub-components
 
-const Row = (/*props*/) => {
+const Row = (props) => {
   //get har entry
+  const { key, name, method, status, type, size, timings, time } = props;
+  //total time is sum of timings
+  // let timea = 0;
+  // for (let key in timings) {
+  //   timea += timings[key[1]] - timings[key[0]];
+  // }
   //const blah = React.useState(0);
   //React.useEffect(() => {set some state})
   return (
-    <div className={"row"}>
-      <tr>
-        <td>hi</td>
-        <td>hello</td>
-      </tr>
-    </div>
+    <tr>
+      <td>{name}</td>
+      <td>{method}</td>
+      <td>{status}</td>
+      <td>{type}</td>
+      <td>{size} bytes</td>
+      <td>{time} ms</td>
+    </tr>
   );
 };
 
