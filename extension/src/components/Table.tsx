@@ -1,10 +1,14 @@
-import "../styles.css";
+// import "../styles.css";
 import Row from "./Row";
+import TableContainer from "@mui/material/TableContainer";
 import TableHeader from "./TableHeader";
+import TableBody from "@mui/material/TableBody";
+import Table from "@mui/material/Table";
+import Paper from "@mui/material/Paper";
 
 //import row sub-component
 
-const Table = (props) => {
+const HARTable = (props) => {
   const { filteredEntries } = props;
   //const blah = React.useState(0);
   //React.useEffect(() => {set some state})
@@ -26,22 +30,26 @@ const Table = (props) => {
   // ];
 
   return (
-    <table className={"table"}>
-      <TableHeader />
-      {filteredEntries.map((entry, index) => (
-        <Row
-          key={index}
-          name={entry.request.url}
-          method={entry.request.method}
-          status={entry.response.status}
-          type={entry.response.content.mimeType}
-          size={entry.response.bodySize} //response.content.size is uscompressed
-          timings={entry.timings}
-          time={entry.time}
-        />
-      ))}
-    </table>
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="a HAR log table">
+        <TableHeader />
+        <TableBody>
+          {filteredEntries.map((entry, index) => (
+            <Row
+              key={index}
+              name={entry.request.url}
+              method={entry.request.method}
+              status={entry.response.status}
+              type={entry.response.content.mimeType}
+              size={entry.response.bodySize} //response.content.size is uscompressed
+              timings={entry.timings}
+              time={entry.time}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
-export default Table;
+export default HARTable;

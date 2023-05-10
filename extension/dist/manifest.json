@@ -1,0 +1,22 @@
+{
+    "name": "NextWork Extension",
+    "description": "Logs server-side HTTP requests in Next.js",
+    "manifest_version": 3,
+    "version": "1.0",
+    "devtools_page": "index.html",
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "run_at": "document_idle",
+            "css": [
+                "styles.css"
+            ]
+        }
+    ],
+    "background": {
+        "service_worker": "service-worker.js"
+    }
+}

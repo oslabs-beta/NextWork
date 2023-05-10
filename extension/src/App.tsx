@@ -1,8 +1,11 @@
 //import all components
 import FilterBar from "./components/FilterBar";
-import Table from "./components/Table";
+import HARTable from "./components/Table";
 import Footer from "./components/Footer";
+import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
+
+import { StyledEngineProvider } from "@mui/material/styles";
 
 export default function App() {
   const [entries, setEntries] = useState([]);
@@ -43,13 +46,16 @@ export default function App() {
   }, [entries, filterInput]);
 
   return (
-    <div>
-      <div className="App">
-        <FilterBar handleInput={handleInput} />
-        <br />
-        <Table filteredEntries={filteredEntries} />
-        <Footer entries={entries} filteredEntries={filteredEntries} />
+    <StyledEngineProvider injectFirst>
+      <div>
+        <Button variant="contained">Hello World</Button>
+        <div className="App">
+          <FilterBar handleInput={handleInput} />
+          <br />
+          <HARTable filteredEntries={filteredEntries} />
+          <Footer entries={entries} filteredEntries={filteredEntries} />
+        </div>
       </div>
-    </div>
+    </StyledEngineProvider>
   );
 }

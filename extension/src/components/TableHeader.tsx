@@ -1,31 +1,23 @@
-import "../styles.css";
+// import "../styles.css";
+import TableHead from "@mui/material/TableHead";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+
 //import sub-components
 
 const TableHeader = () => {
   return (
-    <tr>
-      <th scope="col" id="name" className="th">
-        URL
-      </th>
-      <th scope="col" id="method">
-        Method
-      </th>
-      <th scope="col" id="status">
-        Status
-      </th>
-      <th scope="col" id="type">
-        Type
-      </th>
-      <th scope="col" id="size">
-        Size
-      </th>
-      <th scope="col" id="time">
-        Time
-      </th>
-      <th scope="col" id="waterfall">
-        Waterfall
-      </th>
-    </tr>
+    <TableHead>
+      <TableRow>
+        <TableCell align="right">URL</TableCell>
+        <TableCell align="right">Method</TableCell>
+        <TableCell align="right">Status</TableCell>
+        <TableCell align="right">Type</TableCell>
+        <TableCell align="right">Size</TableCell>
+        <TableCell align="right">Time</TableCell>
+        <TableCell align="right">Waterfall</TableCell>
+      </TableRow>
+    </TableHead>
   );
 };
 

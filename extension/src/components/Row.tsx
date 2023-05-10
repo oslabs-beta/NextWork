@@ -1,4 +1,7 @@
-import "../styles.css";
+// import "../styles.css";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+
 //import sub-components
 
 const Row = (props) => {
@@ -12,14 +15,19 @@ const Row = (props) => {
   //const blah = React.useState(0);
   //React.useEffect(() => {set some state})
   return (
-    <tr>
-      <td>{name}</td>
-      <td>{method}</td>
-      <td>{status}</td>
-      <td>{type}</td>
-      <td>{size} bytes</td>
-      <td>{time} ms</td>
-    </tr>
+    <TableRow
+      key={key}
+      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+    >
+      <TableCell scope="row" align="left">
+        {name}
+      </TableCell>
+      <TableCell align="right">{method}</TableCell>
+      <TableCell align="right">{status}</TableCell>
+      <TableCell align="right">{type}</TableCell>
+      <TableCell align="right">{size} bytes</TableCell>
+      <TableCell align="right">{time} ms</TableCell>
+    </TableRow>
   );
 };
 
