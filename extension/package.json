@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/roboto": "^4.5.8",
     "@types/chrome": "^0.0.232",
     "chart.js": "^4.3.0",
     "react": "^18.2.0",
