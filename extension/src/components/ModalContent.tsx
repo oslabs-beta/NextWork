@@ -1,5 +1,6 @@
-import React from "react";
-import WaterfallChart from "./WaterfallChart";
+import React from 'react';
+import WaterfallChart from './WaterfallChart';
+import ResponseTab from './ResponseTab';
 
 interface ModalContentProps {
   data: any;
@@ -35,9 +36,11 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
   };
 
   const isHeadersTab =
-    ["Headers", "Response", "Timing", "Tab4", "Tab5"][activeTab] === "Headers";
+    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Headers';
   const isTimingTab =
-    ["Headers", "Response", "Timing", "Tab4", "Tab5"][activeTab] === "Timing";
+    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Timing';
+  const isResponse =
+    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Response';
 
   return (
     <div className="tab-content" style={{ maxWidth: '100%' }}>
@@ -57,6 +60,8 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
             <td style={{ maxWidth: '100%' }}>{renderHeaders(data.response.headers)}</td>
           </tr>
         </table>
+      ) : isResponse ? (
+        <ResponseTab content={data.response.content} />
       ) : isTimingTab ? (
         <WaterfallChart timings={data.timings} />
       ) : (
