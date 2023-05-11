@@ -17,27 +17,27 @@
   vertical-align: top;
 }
 
-tr:nth-child(odd) {
+.har-table tr:nth-child(odd) {
   background-color: #292929;
 }
 
-tr:nth-child(even) {
+.har-table tr:nth-child(even) {
   background-color: #202020;
 }
 
-th {
+.har-table th {
   background-color: #292929;
   color: #a9a9a9;
 }
 
-td {
+.har-table td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 500px;
 }
 
-input[type="text"] {
+.filterBar input[type="text"] {
   background-color: #292929;
   border: 1px solid #444444;
   color: #ffffff;
@@ -46,11 +46,11 @@ input[type="text"] {
   width: 200px;
 }
 
-input[type="text"]::placeholder {
+.filterBar input[type="text"]::placeholder {
   color: #a9a9a9;
 }
 
-input[type="text"]:focus {
+.filterBAr input[type="text"]:focus {
   outline: none;
   border-color: #555555;
 }

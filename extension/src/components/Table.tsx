@@ -38,7 +38,7 @@ const Table = (props) => {
 
   return (
     <>
-      <table className={'table'}>
+      <table className={'har-table'}>
         <TableHeader />
         {filteredEntries.map((entry, index) => (
           <Row
