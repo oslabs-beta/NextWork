@@ -15,7 +15,7 @@ interface Headers {
 const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
   const renderHeaders = (headers: Headers[]) => {
     return (
-      <table className="table">
+      <table className="har-table">
         <thead>
           <tr>
             <th>Name</th>
@@ -45,7 +45,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
         ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab]
       }`}</h3> */}
       {isHeadersTab ? (
-        <table className="table" id="req-res-table">
+        <table className="har-table" id="req-res-table">
           <thead>
             <tr>
               <td>Request Headers</td>

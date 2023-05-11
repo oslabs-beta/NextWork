@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({ onClose, data, rowIndex }) => {
   return (
     <div className="modal">
       <br />
-      <table className="table">
+      <table className="har-table">
         <tr>
           <td>
             <div className="tabs">
