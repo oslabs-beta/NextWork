@@ -51,6 +51,7 @@ const Table = (props) => {
             timings={entry.timings}
             time={entry.time}
             onClick={() => handleRowClick(index)}
+            waterfallbar={entry.timings}
           />
         ))}
       </table>

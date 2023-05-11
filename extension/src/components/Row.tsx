@@ -1,9 +1,20 @@
 import '../styles.css';
 //import sub-components
-
+import WaterfallBar from './WaterfallBar';
 const Row = (props) => {
   //get har entry
-  const { key, name, method, status, type, size, timings, time, onClick } = props;
+  const {
+    key,
+    name,
+    method,
+    status,
+    type,
+    size,
+    timings,
+    time,
+    onClick,
+    waterfallbar,
+  } = props;
   //total time is sum of timings
   // let timea = 0;
   // for (let key in timings) {
@@ -19,6 +30,9 @@ const Row = (props) => {
       <td>{type}</td>
       <td>{size} bytes</td>
       <td>{time} ms</td>
+      <td>
+        <WaterfallBar timings={waterfallbar} />
+      </td>
     </tr>
   );
 };
