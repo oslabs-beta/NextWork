@@ -7,13 +7,15 @@
   "files": [
     "dist/",
     "README.md",
-    "postinstall.js"
+    "postinstall.js",
+    "postuninstall.js"
   ],
   "scripts": {
     "test": "jest",
     "build": "webpack",
     "prepublishOnly": "npm run build",
-    "postinstall": "node postinstall.js"
+    "postinstall": "node postinstall.js",
+    "postuninstall": "node postuninstall.js"
   },
   "dependencies": {
     "@types/set-cookie-parser": "^2.4.2",

@@ -1,5 +1,4 @@
-const fs = require('node:fs');
-const { readFile, readFileSync } = require('node:fs');
+const { readFileSync, writeFileSync } = require('node:fs');
 const path = require('node:path');
 
 const packageJsonPath = path.resolve(process.cwd(), '../../package.json');
@@ -10,4 +9,4 @@ packageJson.scripts = packageJson.scripts || {};
 packageJson.scripts['nextWorkDev'] =
   'node --require ./node_modules/next-work/dist/nextWork.js ./node_modules/.bin/next dev';
 
-fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));

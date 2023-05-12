@@ -1,17 +1,15 @@
-# This package is still being developed. Beware, we're still experimenting with different dependencies.
+## NextWork: SSR Debugging Tool
 
-NextWork is a developer tool for watching HTTP network requests and responses in Server-Side Rendered components. Inspecting HTTP communications can help debug SSR pages and optimize code. Come visit in 2 weeks for a stable version and more complete documentation.
+NextWork is a developer tool designed to enhance the process of building web applications using server-side rendering (SSR). SSR has gained popularity due to advantages such as faster load times and easy indexation by search engines. However, it creates a gap in existing debugging tools like Chrome's network tab, making it difficult to inspect server-side requests.
 
-## Usage
+Our team developed a lightweight fetch interceptor for Next.js, leveraging technologies like node-fetch-har. This solution restores the functionality of the Chrome Network Tab for server-side API calls, enabling developers to monitor and optimize their applications' performance.
 
-Install this package:
-`npm install next-work`
+### Installation
 
-Add our Chrome Extension to your library. You will soon find it in the Chrome Web Store.
-The extension creates a new panel in your Chrome Dev Tools that mimics the Network Panel.
+1. Install the NextWork package: `npm install next-work`
 
-Finally, to include nextWorkFetch in your Next dev environment run `npm run nextWorkDev`.
+2. To include `nextWorkFetch` in your Next dev environment, run: `npm run nextWorkDev`
 
-## Documentation
+3. **(Coming Soon)** Add our Chrome Extension to complete the workflow. Once available, you'll find it in the Chrome Web Store. The extension will create a new panel in your Chrome Dev Tools that mimics the Network Panel. An experimental version is available in the `extension` folder in this Github repository. Run `npm run build` and upload the `dist` folder to chrome://extensions/.
 
-Our webpage with full documentation is coming soon.
+For more details and setup instructions, check out our [Website](https://next-work.dev/), [npm package](https://www.npmjs.com/package/next-work), and [Chrome extension (Coming Soon)](#).

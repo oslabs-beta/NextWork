@@ -1,10 +1,21 @@
 import "../styles.css";
 //import sub-components
 
-const FilterBar = (/*props*/) => {
-  //const blah = React.useState(0);
-  //React.useEffect(() => {set some state})
-  return <div className={"filterBar"}>possibly pass some state</div>;
+const FilterBar = (props) => {
+  const { handleInput } = props;
+
+  return (
+    <div className={"filterBar"}>
+      <input
+        type="text"
+        id="input"
+        placeholder="Filter"
+        onChange={(event) => {
+          handleInput(event.currentTarget.value);
+        }}
+      ></input>
+    </div>
+  );
 };
 
 export default FilterBar;
