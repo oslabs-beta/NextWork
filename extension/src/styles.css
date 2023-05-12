@@ -1,31 +1,110 @@
 .har-table,
+.req-res-table,
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+  /* font-family: Arial, Helvetica, sans-serif; */
 }
 
 .har-table td,
 .har-table th,
 .table td,
 .table th {
-  padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid #444444;
+  padding: 10px;
   text-align: left;
+  vertical-align: top;
 }
 
-.har-table th,
-.table th {
-  background-color: #f2f2f2;
+.har-table tr:nth-child(odd) {
+  background-color: #292929;
 }
-.filterBar {
-  background-color: rgb(243, 197, 197);
+
+.har-table tr:nth-child(even) {
+  background-color: #202020;
+}
+
+.har-table th {
+  background-color: #292929;
+  color: #a9a9a9;
+}
+
+.har-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+
+.filterBar input[type="text"] {
+  background-color: #292929;
+  border: 1px solid #444444;
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  padding: 5px 10px;
+  width: 200px;
+}
+
+.filterBar input[type="text"]::placeholder {
+  color: #a9a9a9;
+}
+
+.filterBAr input[type="text"]:focus {
+  outline: none;
+  border-color: #555555;
 }
 
 .footer {
-  background-color: rgb(243, 197, 197);
+  background-color: #292929;
+  border-top: 1px solid #444444;
+  color: #a9a9a9;
+  font-family: "Roboto", sans-serif;
+  padding: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .App {
-  background-color: white;
+  background-color: #202020;
+  color: #a9a9a9;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  background-color: #202020;
+}
+
+.close-button,
+.tab {
+  background-color: #202020;
+  border: 1px solid #444444;
+  color: #a9a9a9;
+  font-family: "Roboto", sans-serif;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.tabs,
+.close-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.close-button:hover {
+  background-color: #555555;
+}
+
+.close-button:focus {
+  outline: none;
+  border-color: #555555;
+}
+
+.modal {
+  overflow: scroll;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

@@ -1,9 +1,20 @@
-import "../styles.css";
+import '../styles.css';
 //import sub-components
-
+import WaterfallBar from './WaterfallBar';
 const Row = (props) => {
   //get har entry
-  const { key, name, method, status, type, size, timings, time } = props;
+  const {
+    key,
+    name,
+    method,
+    status,
+    type,
+    size,
+    timings,
+    time,
+    onClick,
+    waterfallbar,
+  } = props;
   //total time is sum of timings
   // let timea = 0;
   // for (let key in timings) {
@@ -13,12 +24,15 @@ const Row = (props) => {
   //React.useEffect(() => {set some state})
   return (
     <tr>
-      <td>{name}</td>
+      <td onClick={onClick}>{name}</td>
       <td>{method}</td>
       <td>{status}</td>
       <td>{type}</td>
       <td>{size} bytes</td>
       <td>{time} ms</td>
+      <td>
+        <WaterfallBar timings={waterfallbar} />
+      </td>
     </tr>
   );
 };

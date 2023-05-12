@@ -17,6 +17,9 @@ chrome.runtime.onConnect.addListener((devToolsConnection) => {
   devToolsConnection.onMessage.addListener(devToolsListener);
 
   devToolsConnection.onDisconnect.addListener(() => {
+    chrome.storage.local.clear(() => {
+      console.log('Storage cleared');
+    });
     devToolsConnection.onMessage.removeListener(devToolsListener);
   });
 });
@@ -24,7 +27,7 @@ chrome.runtime.onConnect.addListener((devToolsConnection) => {
 var source = new EventSource('http://localhost:3001/stream');
 source.addEventListener(
   'open',
-  function (e) {
+  function(e) {
     // send the information to the panel
     connections[id].postMessage({
       name: 'init',
@@ -35,7 +38,7 @@ source.addEventListener(
   false
 );
 
-source.onmessage = function (e) {
+source.onmessage = function(e) {
   console.log('Received message from server: ', e.data);
   // send the information to the panel
   connections[id].postMessage({
@@ -44,5 +47,4 @@ source.onmessage = function (e) {
   });
 
   chrome.runtime.sendMessage({ data: e.data, log: e.log });
-  // document.getElementById("content").innerHTML += e.data + "<br/>";
 };
