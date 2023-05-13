@@ -58,7 +58,7 @@ export default function App() {
 
   return (
     <div>
-      <div className="App">
+      <div className="App nextwork">
         {/* <FilterBar handleInput={handleInput} /> */}
         <br />
         <Table filteredEntries={filteredEntries} />

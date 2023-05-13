@@ -4,8 +4,6 @@ import Modal from './Modal';
 import Row from './Row';
 import TableHeader from './TableHeader';
 
-//import row sub-component
-
 const Table = (props) => {
   const { filteredEntries } = props;
 
@@ -16,25 +14,6 @@ const Table = (props) => {
     setSelectedRow(index);
     setShowModal(true);
   };
-
-  //const blah = React.useState(0);
-  //React.useEffect(() => {set some state})
-  // const entries = [
-  //   {
-  //     request: {
-  //       url: "blah",
-  //       method: "GET",
-  //     },
-  //     response: {
-  //       status: 200,
-  //       content: {
-  //         mimeType: "App/JSON",
-  //         size: 450,
-  //       },
-  //     },
-  //     timings: [1, 2, 3],
-  //   },
-  // ];
 
   return (
     <>
@@ -55,7 +34,7 @@ const Table = (props) => {
           />
         ))}
       </table>
-      {showModal && (
+      {showModal && selectedRow !== null && filteredEntries.length > 0 && (
         <Modal
           onClose={() => setShowModal(false)}
           data={filteredEntries[selectedRow]}
