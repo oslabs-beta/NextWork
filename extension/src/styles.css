@@ -1,110 +1,118 @@
-.har-table,
-.req-res-table,
-.table {
+.nextwork .har-table,
+.nextwork .req-res-table,
+.nextwork .table {
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
+  margin-top: 5px;
   /* font-family: Arial, Helvetica, sans-serif; */
 }
 
-.har-table td,
-.har-table th,
-.table td,
-.table th {
+.nextwork .har-table td,
+.nextwork .har-table th,
+.nextwork .table td,
+.nextwork .table th {
   border: 1px solid #444444;
   padding: 10px;
   text-align: left;
   vertical-align: top;
 }
 
-.har-table tr:nth-child(odd) {
+.nextwork .har-table tr:nth-child(odd) {
   background-color: #292929;
 }
 
-.har-table tr:nth-child(even) {
+.nextwork .har-table tr:nth-child(even) {
   background-color: #202020;
 }
 
-.har-table th {
+.nextwork .har-table th {
   background-color: #292929;
   color: #a9a9a9;
 }
 
-.har-table td {
+.nextwork .har-table td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 500px;
+  color: #a9a9a9;
 }
 
-.filterBar input[type="text"] {
+.nextwork .filterBar input[type='text'] {
   background-color: #292929;
   border: 1px solid #444444;
   color: #ffffff;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   padding: 5px 10px;
   width: 200px;
 }
 
-.filterBar input[type="text"]::placeholder {
+.nextwork .filterBar input[type='text']::placeholder {
   color: #a9a9a9;
 }
 
-.filterBAr input[type="text"]:focus {
+.nextwork .filterBAr input[type='text']:focus {
   outline: none;
   border-color: #555555;
 }
 
-.footer {
+.nextwork .footer {
   background-color: #292929;
   border-top: 1px solid #444444;
   color: #a9a9a9;
-  font-family: "Roboto", sans-serif;
-  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  padding: 5px;
   position: fixed;
   bottom: 0;
   width: 100%;
   text-align: center;
 }
 
-.App {
+.nextwork .App {
   background-color: #202020;
   color: #a9a9a9;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
-body {
+.nextwork body {
   background-color: #202020;
 }
 
-.close-button,
-.tab {
+.nextwork .close-button,
+.nextwork .tab {
   background-color: #202020;
   border: 1px solid #444444;
   color: #a9a9a9;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   padding: 10px 20px;
   cursor: pointer;
 }
 
-.tabs,
-.close-button {
+.nextwork .tabs,
+.nextwork .close-button {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
 
-.close-button:hover {
+.nextwork .close-button:hover {
   background-color: #555555;
 }
 
-.close-button:focus {
+.nextwork .close-button:focus {
   outline: none;
   border-color: #555555;
 }
 
-.modal {
+.nextwork .modal {
   overflow: scroll;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.nextwork .textContainer {
+  max-width: 300px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
