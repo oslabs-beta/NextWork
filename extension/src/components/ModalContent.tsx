@@ -43,7 +43,7 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
     <div className="tab-content" style={{ maxWidth: '100%' }}>
       {isHeadersTab ? (
         <>
-          <div>{data.request.url}</div>
+          <p>{data.request.url}</p>
           <table className="har-table" id="req-res-table">
             <thead>
               <tr>
