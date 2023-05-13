@@ -6,7 +6,7 @@
   "devtools_page": "index.html",
   "content_scripts": [
     {
-      "matches": ["http://localhost/*"],
+      "matches": ["<all_urls>", "http://localhost/*"],
       "run_at": "document_idle",
       "css": ["styles.css"]
     }
