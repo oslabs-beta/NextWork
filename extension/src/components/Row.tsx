@@ -30,7 +30,7 @@ const Row = (props) => {
       <td>{type}</td>
       <td>{size} bytes</td>
       <td>{time} ms</td>
-      <td>
+      <td style={{ position: 'relative', maxWidth: '350px', maxHeight: '50px' }}>
         <WaterfallBar timings={waterfallbar} />
       </td>
     </tr>

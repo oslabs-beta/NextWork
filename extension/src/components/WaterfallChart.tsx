@@ -8,6 +8,14 @@ interface WaterfallChartProps {
 interface ChartElement extends HTMLCanvasElement {
   chartInstance?: Chart;
 }
+const colorPalette = [
+  'hsl(0, 100%, 45%)',
+  'hsl(20, 100%, 45%)',
+  'hsl(40, 100%, 45%)',
+  'hsl(60, 100%, 45%)',
+  'hsl(80, 100%, 45%)',
+  'hsl(100, 100%, 45%)',
+];
 
 const WaterfallChart: React.FC<WaterfallChartProps> = ({ timings }) => {
   const chartRef = useRef<ChartElement | null>(null);
@@ -56,7 +64,7 @@ const WaterfallChart: React.FC<WaterfallChartProps> = ({ timings }) => {
           {
             data: data.data,
             backgroundColor: data.labels.map(
-              (_, index) => `hsl(${(index / data.labels.length) * 120}, 100%, 50%)`
+              (_, index) => colorPalette[index % colorPalette.length]
             ),
           },
         ],

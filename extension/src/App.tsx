@@ -59,7 +59,7 @@ export default function App() {
   return (
     <div>
       <div className="App">
-        {/* <FilterBar handleInput={handleInput} /> */}
+        <FilterBar handleInput={handleInput} />
         <br />
         <Table filteredEntries={filteredEntries} />
         <Footer entries={entries} filteredEntries={filteredEntries} />

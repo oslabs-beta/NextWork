@@ -9,6 +9,15 @@ interface ChartElement extends HTMLCanvasElement {
   chartInstance?: Chart;
 }
 
+const colorPalette = [
+  'hsl(0, 100%, 45%)',
+  'hsl(20, 100%, 45%)',
+  'hsl(40, 100%, 45%)',
+  'hsl(60, 100%, 45%)',
+  'hsl(80, 100%, 45%)',
+  'hsl(100, 100%, 45%)',
+];
+
 const WaterfallBar: React.FC<WaterfallChartProps> = ({ timings }) => {
   const chartRef = useRef<ChartElement | null>(null);
 
@@ -33,7 +42,7 @@ const WaterfallBar: React.FC<WaterfallChartProps> = ({ timings }) => {
       return {
         label: key,
         data: [percentage],
-        backgroundColor: `hsl(${(index / timingEntries.length) * 120}, 100%, 50%)`,
+        backgroundColor: colorPalette[index % colorPalette.length],
       };
     });
 
@@ -93,8 +102,8 @@ const WaterfallBar: React.FC<WaterfallChartProps> = ({ timings }) => {
             borderColor: 'rgba(0,0,0,0.1)',
           },
         },
-        maintainAspectRatio: true,
-        aspectRatio: 7,
+        responsive: true,
+        maintainAspectRatio: false,
       },
     });
 
@@ -105,7 +114,7 @@ const WaterfallBar: React.FC<WaterfallChartProps> = ({ timings }) => {
     };
   }, [timings, chartRef]);
 
-  return <canvas ref={chartRef}></canvas>;
+  return <canvas ref={chartRef} style={{ width: '100%', height: '30%' }} />;
 };
 
 export default WaterfallBar;

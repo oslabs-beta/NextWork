@@ -35,31 +35,28 @@ const ModalContent: React.FC<ModalContentProps> = ({ data, activeTab }) => {
     );
   };
 
-  const isHeadersTab =
-    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Headers';
-  const isTimingTab =
-    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Timing';
-  const isResponse =
-    ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab] === 'Response';
+  const isHeadersTab = ['Headers', 'Response', 'Timing'][activeTab] === 'Headers';
+  const isTimingTab = ['Headers', 'Response', 'Timing'][activeTab] === 'Timing';
+  const isResponse = ['Headers', 'Response', 'Timing'][activeTab] === 'Response';
 
   return (
     <div className="tab-content" style={{ maxWidth: '100%' }}>
-      {/* <h3>{`Content for ${
-        ['Headers', 'Response', 'Timing', 'Tab4', 'Tab5'][activeTab]
-      }`}</h3> */}
       {isHeadersTab ? (
-        <table className="har-table" id="req-res-table">
-          <thead>
+        <>
+          <div>{data.request.url}</div>
+          <table className="har-table" id="req-res-table">
+            <thead>
+              <tr>
+                <td>Request Headers</td>
+                <td>Response Headers</td>
+              </tr>
+            </thead>
             <tr>
-              <td>Request Headers</td>
-              <td>Response Headers</td>
+              <td>{renderHeaders(data.request.headers)}</td>
+              <td style={{ maxWidth: '100%' }}>{renderHeaders(data.response.headers)}</td>
             </tr>
-          </thead>
-          <tr>
-            <td>{renderHeaders(data.request.headers)}</td>
-            <td style={{ maxWidth: '100%' }}>{renderHeaders(data.response.headers)}</td>
-          </tr>
-        </table>
+          </table>
+        </>
       ) : isResponse ? (
         <ResponseTab content={data.response.content} />
       ) : isTimingTab ? (
