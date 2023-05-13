@@ -6,12 +6,13 @@
   "devtools_page": "index.html",
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["<all_urls>", "http://localhost/*"],
       "run_at": "document_idle",
       "css": ["styles.css"]
     }
   ],
   "background": {
     "service_worker": "service-worker.js"
-  }
+  },
+  "permissions": ["storage"]
 }
