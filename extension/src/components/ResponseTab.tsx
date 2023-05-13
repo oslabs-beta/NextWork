@@ -7,16 +7,16 @@ interface Content {
   compression: number;
 }
 
-interface ContentSizeProps {
+interface ResponseTabProps {
   content: Content;
 }
 
-const ContentSize: React.FC<ContentSizeProps> = ({ content }) => {
+const ResponseTab: React.FC<ResponseTabProps> = ({ content }) => {
   return (
     <div>
-      <p>{content.text}</p>
+      <p className={'textContainer'}>{content.text}</p>
     </div>
   );
 };
 
-export default ContentSize;
+export default ResponseTab;
