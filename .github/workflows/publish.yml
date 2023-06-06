@@ -1,11 +1,11 @@
-name: 'publish'
+name: "publish"
 
 on:
   push:
     branches:
       - main
     paths-ignore:
-      - 'extension/**'
+      - "extension/**"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,9 +14,13 @@ jobs:
       # Setup .npmrc file to publish to npm
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: npm ci --ignore-scripts
-      - run: npm publish --access public
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+        working-directory: npm-package
+      - name: Publish to npm
+        run: npm publish --access public
+        working-directory: npm-package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
