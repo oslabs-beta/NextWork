@@ -32,6 +32,7 @@ export default function App() {
     setFilterInput(filterInput);
   };
 
+  // runs the moment you open dev tools panel - listens for messages from service worker
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.data) {
@@ -42,6 +43,7 @@ export default function App() {
     });
   }, []);
 
+  // filters entries based on filterInput
   useEffect(() => {
     setFilteredEntries(
       entries.filter((entry) =>
@@ -52,6 +54,7 @@ export default function App() {
     );
   }, [entries, filterInput]);
 
+  // loads entries and filterInput from storage
   useEffect(() => {
     loadFromStorage();
   }, []);
