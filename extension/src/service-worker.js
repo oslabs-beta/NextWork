@@ -1,15 +1,16 @@
 let id = null;
 const connections = {};
 
+// establishing connection between devtools and background script
 chrome.runtime.onConnect.addListener((devToolsConnection) => {
   // Assign the listener function to a variable so we can remove it later
-  let devToolsListener = (message, sender, sendResponse) => {
-    if (message.name == 'init') {
+  const devToolsListener = (message, sender, sendResponse) => {
+    if (message.name == "init") {
       id = message.tabId;
       connections[id] = devToolsConnection;
       // Send a message back to DevTools
       console.log('one line above connections[id].postMessage("Connected!")');
-      connections[id].postMessage('Connected!');
+      connections[id].postMessage("Connected!");
     }
   };
 
@@ -18,31 +19,31 @@ chrome.runtime.onConnect.addListener((devToolsConnection) => {
 
   devToolsConnection.onDisconnect.addListener(() => {
     chrome.storage.local.clear(() => {
-      console.log('Storage cleared');
+      console.log("Storage cleared");
     });
     devToolsConnection.onMessage.removeListener(devToolsListener);
   });
 });
 
-var source = new EventSource('http://localhost:3001/stream');
+var source = new EventSource("http://localhost:3001/stream");
 source.addEventListener(
-  'open',
+  "open",
   function(e) {
     // send the information to the panel
     connections[id].postMessage({
-      name: 'init',
+      name: "init",
       tabId: id,
     });
-    console.log('Connection to the server established');
+    console.log("Connection to the server established");
   },
   false
 );
 
 source.onmessage = function(e) {
-  console.log('Received message from server: ', e.data);
+  console.log("Received message from server: ", e.data);
   // send the information to the panel
   connections[id].postMessage({
-    name: 'init',
+    name: "init",
     tabId: id,
   });
 
