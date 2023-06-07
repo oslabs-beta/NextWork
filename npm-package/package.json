@@ -1,6 +1,6 @@
 {
   "name": "next-work",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "main": "./dist/nextWork.js",
   "module": "./dist/nextWork.js",
   "types": "./dist/*.d.ts",

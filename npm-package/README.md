@@ -10,6 +10,6 @@ Our team developed a lightweight fetch interceptor for Next.js, leveraging techn
 
 2. To include `nextWorkFetch` in your Next dev environment, run: `npm run nextWorkDev`
 
-3. **(Coming Soon)** Add our Chrome Extension to complete the workflow. Once available, you'll find it in the Chrome Web Store. The extension will create a new panel in your Chrome Dev Tools that mimics the Network Panel. An experimental version is available in the `extension` folder in this Github repository. Run `npm run build` and upload the `dist` folder to chrome://extensions/.
+3. Add our Chrome Extension to complete the workflow [Extension](https://chrome.google.com/webstore/detail/nextwork-extension/kconklnlmiohlhjclohmaepphofjhblk?hl=en).
 
-For more details and setup instructions, check out our [Website](https://next-work.dev/), [npm package](https://www.npmjs.com/package/next-work), and [Chrome extension (Coming Soon)](#).
+For more details and setup instructions, check out our [Website](https://next-work.dev/), [npm package](https://www.npmjs.com/package/next-work), and [Chrome extension](https://chrome.google.com/webstore/detail/nextwork-extension/kconklnlmiohlhjclohmaepphofjhblk?hl=en).

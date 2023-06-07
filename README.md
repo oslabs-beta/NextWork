@@ -12,4 +12,4 @@ Our team developed a lightweight fetch interceptor for Next.js, leveraging techn
 
 3. Add our Chrome Extension to complete the workflow [Extension](https://chrome.google.com/webstore/detail/nextwork-extension/kconklnlmiohlhjclohmaepphofjhblk?hl=en).
 
-For more details and setup instructions, check out our [Website](https://next-work.dev/), [npm package](https://www.npmjs.com/package/next-work), and [Chrome extension (Coming Soon)](#).
+For more details and setup instructions, check out our [Website](https://next-work.dev/), [npm package](https://www.npmjs.com/package/next-work), and [Chrome extension](https://chrome.google.com/webstore/detail/nextwork-extension/kconklnlmiohlhjclohmaepphofjhblk?hl=en).
